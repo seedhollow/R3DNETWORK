@@ -2,7 +2,7 @@
 
 # IL2CPP Android Template
 
-This project is based on [LGL Mod Menu](https://github.com/LGLTeam/Android-Mod-Menu/). Since the original project is no longer actively maintained, I have made several modifications, including:
+This project is based on [LGL Mod Menu](https://github.com/LGLTeam/Android-Mod-Menu/). Since the original project is no longer actively maintained, We have made several modifications, including:
 
 - **UI Changes**: Updated the menu interface.
 - **New Modules**: Added additional modules to extend functionality.
@@ -14,6 +14,15 @@ This project is based on [LGL Mod Menu](https://github.com/LGLTeam/Android-Mod-M
 > Starting from version 1.3, `Il2cppResolver` has been replaced with `UnityResolve` to offer more extensive API support and improved functionality.
 > 
 > New feature suggestions or bugs can be commit as issues.
+
+## Layout Style
+
+Starting from version 1.4, `Il2cppAndroid` now supports two mod menu layouts: the new default layout and the LGL layout. You can switch between them using build flavors: `spookynovaLayout` for the new design and `lglLayout` for the classic LGL style.
+
+Special thanks to **[nik2143](https://github.com/nik2143)** for bringing back the LGL mod menu layout!
+
+
+![Build Flavor](https://raw.githubusercontent.com/seedhollow/IL2CppAndroid/refs/heads/main/img/build-flavor.png)
 
 ## How to use
 To enable and display a floating menu in your target app, follow these steps:
