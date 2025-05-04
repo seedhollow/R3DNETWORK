@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.View;
 
 import org.lsposed.lsparanoid.Obfuscate;
 
@@ -73,22 +72,19 @@ public class Launcher extends Service {
     }
 
     private void UpdateMenuVisibility() {
-        if (isNotInGame()) {
-            menu.setVisibility(View.INVISIBLE);
-            menu.hideDrawView();
-        } else {
-            menu.setVisibility(View.VISIBLE);
-            menu.showDrawView();
-        }
+        menu.setModMenuVisibility(!isNotInGame());
+        menu.setEspLayoutVisibility(!isNotInGame());
     }
 
     //Destroy our View
+    @Override
     public void onDestroy() {
         super.onDestroy();
         menu.onDestroy();
     }
 
     //Same as above so it wont crash in the background and therefore use alot of Battery life
+    @Override
     public void onTaskRemoved(Intent intent) {
         super.onTaskRemoved(intent);
         try {

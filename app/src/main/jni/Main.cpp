@@ -7,42 +7,38 @@
 #include <jni.h>
 #include <unistd.h>
 #include <fstream>
-#include <sys/mman.h>
 #include <iostream>
 #include <dlfcn.h>
 #include <numbers>
+
 #include "Includes/Logger.h"
 #include "Includes/obfuscate.h"
 #include "dobby/dobby.h"
+#include "Menu/Features.hpp"
 #include "UnityResolve/UnityResolve.hpp"
-#include "Includes/Utils.h"
+#include "Includes/Utils.hpp"
 #include "Includes/RemapTools.h"
 #include "KittyMemory/MemoryPatch.h"
 #include "Includes/ObscuredTypes.h"
 #include "Includes/ESPManager.h"
-#include "Includes/Draw.h"
-#include "Hacks/Vars.h"
-#include "Hacks/Offsets.h"
-#include "Hacks/Hooks.h"
-#include "Menu/Setup.h"
-#include "Menu/Features.h"
 
 //Target lib here
 #define IL2CPP_MODULE OBFUSCATE("libil2cpp.so")
 
-void hook_thread() {
-    // ----------------- Hooks -------------------
-    // You can hook your methods here
-    // If your class have a namespace, you don't need to add the namespace to the class name
-    // Example RedNetwork.PlayerManager -> PlayerManager
+void LoadNativeLibPath(JNIEnv *env, jclass clazz, jstring native_lib_dir) {
+    LOGE(OBFUSCATE("Load injector in pid %d"), getpid());
+    const char* dir = env->GetStringUTFChars(native_lib_dir, nullptr);
+    std::string path = std::string(dir) + std::string (OBFUSCATE("/libLoader.so"));
 
-    // m_pArgs = {} if the method doesn't have any arguments
-    // if you're lazy to input type data on args, you can use "*" depends how many arguments the method have
-    // Example: m_pArgs = {"*", "*", "*"} if the method have 3 arguments
-    UnityResolve::Hook(OBFUSCATE("PlayerManager"), OBFUSCATE("Update"), {}, (void *) PlayerUpdate, (void **) &orig_PlayerUpdate);
-
+    //Open the library containing the actual code
+    void *open = dlopen(path.c_str(), RTLD_NOW);
+    if (open == nullptr) {
+        LOGE(OBFUSCATE("Error opening %s %s"), path.c_str(), dlerror());
+    }
+    RemapTools::RemapLibrary(OBFUSCATE("libLoader.so"));
 }
 
+void hook_thread();
 
 void *hack_thread(void *) {
     LOGI(OBFUSCATE("pthread created"));

@@ -5,12 +5,8 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.text.Html;
-import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
-
-import com.android.support.Menu;
 
 import org.lsposed.lsparanoid.Obfuscate;
 

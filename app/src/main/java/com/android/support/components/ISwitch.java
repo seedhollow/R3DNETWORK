@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 
-import com.android.support.Menu;
 import com.android.support.Preferences;
 
 import org.lsposed.lsparanoid.Obfuscate;

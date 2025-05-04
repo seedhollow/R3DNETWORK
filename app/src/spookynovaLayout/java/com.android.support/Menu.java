@@ -18,10 +18,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -45,12 +41,8 @@ import com.android.support.components.ITextView;
 import org.lsposed.lsparanoid.Obfuscate;
 
 @Obfuscate
-public class Menu {
+public class Menu extends BaseMenu {
 
-    Typeface typeface;
-    Context getContext;
-
-    public static final String TAG = "R3DNetwork"; //Tag for logcat
     public static int MENU_WIDTH = 290;
     public static int POS_X = 0;
     public static int POS_Y = 100;
@@ -60,7 +52,7 @@ public class Menu {
 
     // ----------- Menu Layout ------------
 
-    RelativeLayout __mCollapsed, __mRootContainer;
+    RelativeLayout __mRootContainer;
     LinearLayout __mExpanded, __featureContainer;
     LinearLayout.LayoutParams __menuExpanded;
     FrameLayout __frameLayout;
@@ -89,36 +81,9 @@ public class Menu {
     //Here we write the code for our Menu
     // Reference: https://www.androidhive.info/2016/11/android-floating-widget-like-facebook-chat-head/
     public Menu(Context context) {
-        getContext  = context;
+        super(context);
         drawView    = new DrawView(getContext);
-        Preferences.context = context;
-        InitTypeFace(getContext);
         InitComponent(context);
-    }
-
-    private void InitTypeFace(Context context){
-        typeface = Typeface.DEFAULT; //Init to default, if errors occurs, prevent crashes
-        byte[] fontData = Natives.LoadFontData(context);
-        if (fontData != null) {
-            File tempFontFile = null;
-            try {
-                tempFontFile = File.createTempFile("font_file", ".ttf", context.getCacheDir());
-                try (FileOutputStream fos = new FileOutputStream(tempFontFile)) {
-                    fos.write(fontData);
-                }
-                if (tempFontFile.exists()) {
-                    typeface = Typeface.createFromFile(tempFontFile);
-                } else {
-                    Log.e(TAG, "Failed to create or find font file.");
-                }
-            } catch (IOException e) {
-                Log.e(TAG, "Error occurred loading Font,Default will be used",e);
-            } finally {
-                if (tempFontFile != null && tempFontFile.exists()) {
-                    tempFontFile.delete();
-                }
-            }
-        }
     }
 
     private void InitComponent(Context context) {
@@ -143,10 +108,6 @@ public class Menu {
 
         __mRootContainer = new RelativeLayout(context); // Markup on which two markups of the icon and the menu itself will be placed
         __mRootContainer.setLayoutParams(new RelativeLayout.LayoutParams(dp(context, MENU_WIDTH), WRAP_CONTENT));
-
-
-        __mCollapsed = new RelativeLayout(context); // Markup of the icon (when the menu is minimized)
-        __mCollapsed.setVisibility(View.GONE);
 
         //********** The box of the mod menu **********
         __mExpanded = new LinearLayout(context); // Menu markup (when the menu is expanded)
@@ -248,14 +209,17 @@ public class Menu {
 
         __scrollViewMenu.addView(__featureContainer);
 
-        Natives.Init(context, _titleText, _bottomText);
+        Init(context, _titleText, _bottomText);
     }
 
+    @Override
     public void ShowMenu() {
         __frameLayout.addView(__mRootContainer);
         __featureContainer.removeAllViews();
-        featureList(Natives.GetFeatureList(), __featureContainer);
+        featureList(GetFeatureList(), __featureContainer);
     }
+
+    private native void Init(Context context, TextView title, TextView subTitle);
 
     @SuppressLint("WrongConstant")
     public void SetWindowManagerWindowService() {
@@ -282,8 +246,8 @@ public class Menu {
         layoutParams.gravity = Gravity.TOP | Gravity.START;
         canvasParams.x = 0;
         canvasParams.y = 100;
-        mWindowManager.addView(drawView, canvasParams);
-        mWindowManager.addView(__frameLayout, vmParams);
+        if (drawView.getParent() == null) mWindowManager.addView(drawView, canvasParams);
+        if (__frameLayout.getParent() == null) mWindowManager.addView(__frameLayout, vmParams);
         overlayRequired = true;
     }
 
@@ -311,7 +275,6 @@ public class Menu {
 
     private View.OnTouchListener onTouchListener() {
         return new View.OnTouchListener() {
-            final View collapsedView = __mCollapsed;
             final View expandedView = __mExpanded;
             private float initialTouchX, initialTouchY;
             private int initialX, initialY;
@@ -328,24 +291,9 @@ public class Menu {
                         int rawX = (int) (motionEvent.getRawX() - initialTouchX);
                         int rawY = (int) (motionEvent.getRawY() - initialTouchY);
                         __mExpanded.setAlpha(1f);
-                        __mCollapsed.setAlpha(1f);
-                        //The check for Xdiff <10 && YDiff< 10 because sometime elements moves a little while clicking.
-                        //So that is click event.
-                        if (rawX < 10 && rawY < 10 && isViewCollapsed()) {
-                            //When user clicks on the image view of the collapsed layout,
-                            //visibility of the collapsed layout will be changed to "View.GONE"
-                            //and expanded view will become visible.
-                            try {
-                                collapsedView.setVisibility(View.GONE);
-                                expandedView.setVisibility(View.VISIBLE);
-                            } catch (NullPointerException e) {
-                                e.printStackTrace();
-                            }
-                        }
                         return true;
                     case MotionEvent.ACTION_MOVE:
                         __mExpanded.setAlpha(0.3f);
-                        __mCollapsed.setAlpha(0.3f);
                         //Calculate the X and Y coordinates of the view.
                         vmParams.x = initialX + ((int) (motionEvent.getRawX() - initialTouchX));
                         vmParams.y = initialY + ((int) (motionEvent.getRawY() - initialTouchY));
@@ -449,33 +397,29 @@ public class Menu {
     }
 
     private boolean isViewCollapsed() {
-        return __frameLayout == null || __mCollapsed.getVisibility() == View.VISIBLE;
+        return !isExpanded;
     }
 
-    public void setVisibility(int view) {
+    public void setModMenuVisibility(boolean visible){
         if (__frameLayout != null) {
-            __frameLayout.setVisibility(view);
+            __frameLayout.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         }
     }
 
-    public void onDestroy() {
-        if (__frameLayout != null && mWindowManager != null) {
+    public void setEspLayoutVisibility(boolean visible){
+        if (drawView != null) {
+            drawView.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    @Override
+    public void KillMenu() {
+        if (__frameLayout!=null) __frameLayout.removeView(__mRootContainer);
+        if (__frameLayout != null && mWindowManager != null && __frameLayout.getParent()!=null) {
             mWindowManager.removeView(__frameLayout);
         }
-
-        if (drawView != null && mWindowManager != null) {
+        if (drawView != null && mWindowManager != null  && drawView.getParent()!=null) {
             mWindowManager.removeView(drawView);
         }
-    }
-
-    // onPaused
-    public void hideDrawView() {
-        if (drawView != null) {
-            drawView.setVisibility(View.GONE);
-        }
-    }
-
-    public void showDrawView() {
-        drawView.setVisibility(View.VISIBLE);
     }
 }
