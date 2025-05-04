@@ -1,9 +1,26 @@
-#include <sstream>
-#include "Menu/Menu.h"
-#include "Menu/get_device_api_level_inlines.h"
+#include "Menu/Menu.hpp"
+#include "Includes/obfuscate.h"
 
-//Jni stuff from MrDarkRX https://github.com/MrDarkRXx/DarkMod-Floating
-void setDialog(jobject ctx, JNIEnv *env, const char *title, const char *msg){
+//Big letter cause crash
+void setText(JNIEnv *env, jobject obj, const char *text) {
+    //https://stackoverflow.com/a/33627640/3763113
+    //A little JNI calls here. You really really need a great knowledge if you want to play with JNI stuff
+    //Html.fromHtml("");
+    jclass html = (*env).FindClass(OBFUSCATE("android/text/Html"));
+    jmethodID fromHtml = (*env).GetStaticMethodID(html, OBFUSCATE("fromHtml"), OBFUSCATE(
+            "(Ljava/lang/String;)Landroid/text/Spanned;"));
+
+    //setText("");
+    jclass textView = (*env).FindClass(OBFUSCATE("android/widget/TextView"));
+    jmethodID setText = (*env).GetMethodID(textView, OBFUSCATE("setText"),
+                                           OBFUSCATE("(Ljava/lang/CharSequence;)V"));
+
+    //Java string
+    jstring jstr = (*env).NewStringUTF(text);
+    (*env).CallVoidMethod(obj, setText, (*env).CallStaticObjectMethod(html, fromHtml, jstr));
+}
+
+void showDialog(jobject ctx, JNIEnv *env, const char *title, const char *msg){
     jclass Alert = env->FindClass(OBFUSCATE("android/app/AlertDialog$Builder"));
     jmethodID AlertCons = env->GetMethodID(Alert, OBFUSCATE("<init>"), OBFUSCATE("(Landroid/content/Context;)V"));
 
@@ -30,7 +47,7 @@ void setDialog(jobject ctx, JNIEnv *env, const char *title, const char *msg){
     env->CallVoidMethod(creaetob, show);
 }
 
-void Toast(JNIEnv *env, jobject thiz, const char *text, int length) {
+void showToast(JNIEnv *env, jobject thiz, const char *text, int length) {
     jstring jstr = env->NewStringUTF(text);
     jclass html = (*env).FindClass(OBFUSCATE("android/text/Html"));
     jmethodID fromHtml = (*env).GetStaticMethodID(html, OBFUSCATE("fromHtml"), OBFUSCATE("(Ljava/lang/String;)Landroid/text/Spanned;"));
@@ -39,19 +56,4 @@ void Toast(JNIEnv *env, jobject thiz, const char *text, int length) {
     jobject toastobj = env->CallStaticObjectMethod(toast, methodMakeText,thiz, (*env).CallStaticObjectMethod(html, fromHtml, jstr), length);
     jmethodID methodShow = env->GetMethodID(toast, OBFUSCATE("show"), OBFUSCATE("()V"));
     env->CallVoidMethod(toastobj, methodShow);
-}
-
-void Init(JNIEnv *env, jobject thiz, jobject ctx, jobject title, jobject bottomTitle){
-    setText(env, title, OBFUSCATE("<b>-=[ R3D Network ID ]=-</b>"));
-    setText(env, bottomTitle, OBFUSCATE("<b>- Modded by rrosetta | Platinmods.com -</b>"));
-
-    // Set Colored Text
-    // setText(env, title, OBFUSCATE("<b><p style=\"color:green\">Modded by Nik2143</p></b>"));
-
-    Toast(env,ctx,OBFUSCATE("R3D Network ID"),ToastLength::LENGTH_LONG);
-
-    // Set Colored Toast
-    //Toast(env,ctx,OBFUSCATE("<b><font color=lime>Modded by Nik2143 - Exclusive on www.Platinmods.com</font></b>"),ToastLength::LENGTH_LONG);
-
-    initValid = true;
 }

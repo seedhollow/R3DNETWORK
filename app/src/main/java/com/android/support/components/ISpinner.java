@@ -11,7 +11,6 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.android.support.Menu;
 import com.android.support.Preferences;
 
 import org.lsposed.lsparanoid.Obfuscate;

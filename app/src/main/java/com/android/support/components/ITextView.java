@@ -6,8 +6,6 @@ import android.text.Html;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.support.Menu;
-
 import org.lsposed.lsparanoid.Obfuscate;
 
 @Obfuscate

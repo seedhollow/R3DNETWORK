@@ -1,14 +1,13 @@
-#ifndef UTILS
-#define UTILS
-
 #include <jni.h>
 #include <unistd.h>
 #include <cstdio>
 #include <cstring>
 #include <string>
 #include <cstdlib>
+#include "../Includes/obfuscate.h"
 #include "Logger.h"
 #include "Fonts/Pixellari.h"
+#include "Utils.hpp"
 
 
 typedef unsigned long DWORD;
@@ -94,11 +93,6 @@ uintptr_t string2Offset(const char *c) {
     return strtoull(c, nullptr, base);
 }
 
-namespace ToastLength {
-    inline const int LENGTH_LONG = 1;
-    inline const int LENGTH_SHORT = 0;
-}
-
 jbyteArray LoadFontData(JNIEnv *env, jclass thiz, jobject ctx) {
     // Create a byte array in Java to hold the font data
     jbyteArray fontData = env->NewByteArray(std::size(font));
@@ -108,5 +102,3 @@ jbyteArray LoadFontData(JNIEnv *env, jclass thiz, jobject ctx) {
 
     return fontData;  // Return the font data as a byte array
 }
-
-#endif

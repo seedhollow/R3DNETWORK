@@ -11,9 +11,7 @@
 #include "Includes/obfuscate.h"
 #include "Includes/Logger.h"
 #include "Includes/RemapTools.h"
-#include "Includes/Utils.h"
-#include "Menu/Setup.h"
-
+#include "Includes/Utils.hpp"
 
 bool remapLoaded = false;
 
@@ -45,8 +43,37 @@ std::string GetNativeLibraryDirectory() {
     return "";
 }
 
+jboolean isRemapSuccess(JNIEnv *env, jclass clazz) {
+    return remapLoaded;
+}
+
+int RegisterLoader(JNIEnv* env) {
+    jclass clazz = env->FindClass("com/android/support/Loader");
+    if (!clazz) {
+        return JNI_ERR; // Class not found
+    }
+
+    static const JNINativeMethod methods[] = {
+            {"isRemapSuccess", "()Z", reinterpret_cast<void*>(isRemapSuccess)},
+    };
+
+    if (env->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(methods[0])) != JNI_OK) {
+        return JNI_ERR;
+    }
+
+    return JNI_OK;
+}
 
 jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+    JNIEnv *env;
+    vm->GetEnv((void **) &env, JNI_VERSION_1_6);
+
+    if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) != JNI_OK) {
+        return JNI_ERR; // Failed to obtain JNIEnv
+    }
+    if (RegisterLoader(env)!=0){
+        return JNI_ERR;
+    }
     LOGI(OBFUSCATE("libLoader.so loaded in %d"), getpid());
 
     std::string native = GetNativeLibraryDirectory();
@@ -69,11 +96,4 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     remapLoaded = true;
 
     return JNI_VERSION_1_6;
-}
-
-
-extern "C"
-JNIEXPORT jboolean JNICALL
-Java_com_android_support_Loader_isRemapSuccess(JNIEnv *env, jclass clazz) {
-    return remapLoaded;
 }

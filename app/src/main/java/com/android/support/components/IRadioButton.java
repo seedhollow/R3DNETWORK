@@ -12,7 +12,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.android.support.Menu;
 import com.android.support.Preferences;
 
 import org.lsposed.lsparanoid.Obfuscate;

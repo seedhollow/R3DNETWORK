@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
-import android.graphics.Typeface;
 import android.util.Log;
 import android.view.View;
 
@@ -37,12 +36,14 @@ public class DrawView extends View implements Runnable {
         mThread.start();
     }
 
+    private native void OnDrawLoad(DrawView drawView, Canvas canvas);
+
     @Override
     protected void onDraw(Canvas canvas) {
         if (canvas != null && getVisibility() == VISIBLE) {
             ClearCanvas(canvas);
             time.setTime(System.currentTimeMillis());
-            Natives.OnDrawLoad(this, canvas);
+            OnDrawLoad(this, canvas);
         }
     }
 
