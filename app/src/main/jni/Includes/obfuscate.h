@@ -29,7 +29,7 @@ std::cout << obfuscated_string << std::endl;
 // This can be user specified by defining AY_OBFUSCATE_DEFAULT_KEY before
 // including obfuscate.h
 #define AY_OBFUSCATE_DEFAULT_KEY ay::generate_key(__LINE__)
-#endif
+
 
 namespace ay
 {
@@ -222,3 +222,4 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
 CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
+#endif
