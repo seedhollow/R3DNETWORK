@@ -56,13 +56,15 @@ namespace RemapTools {
     void RemapLibrary(std::string name) {
         std::vector<ProcMapInfo> maps = ListModulesWithName(name);
 
+        LOGD(OBFUSCATE("Mapping %s"), name.c_str());
+
         for (ProcMapInfo info : maps) {
             void *address = (void *)info.start;
             size_t size = info.end - info.start;
             void *map = mmap(0, size, PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 
             if ((info.perms & PROT_READ) == 0) {
-                LOGI("Removing protection: %s", info.path);
+                LOGI(OBFUSCATE("Removing protection: %s"), info.path);
                 mprotect(address, size, PROT_READ);
             }
 

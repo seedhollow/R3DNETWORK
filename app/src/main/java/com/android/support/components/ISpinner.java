@@ -49,7 +49,22 @@ public class ISpinner {
         final Spinner spinner = new Spinner(context, Spinner.MODE_DROPDOWN);
         spinner.setLayoutParams(mLayoutParam);
         spinner.getBackground().setColorFilter(1, PorterDuff.Mode.SRC_ATOP);
-        ArrayAdapter<String> aa = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, lists);
+        ArrayAdapter<String> aa = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, lists) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                TextView textView = (TextView) super.getView(position, convertView, parent);
+                textView.setTypeface(typeface);
+                return textView;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                TextView textView = (TextView) super.getDropDownView(position, convertView, parent);
+                textView.setTypeface(typeface);
+                return textView;
+            }
+        };
+        spinner.setAdapter(aa);
         aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(aa);
         spinner.setSelection(Preferences.loadPrefInt(featName, featNum));

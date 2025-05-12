@@ -7,7 +7,7 @@ import org.lsposed.lsparanoid.Obfuscate;
 @Obfuscate
 public class Colors {
     public static int ToggleOFF = Color.parseColor("#EC4857");
-    public static int ToggleON = Color.parseColor("#8742F5");
+    public static int ToggleON = Color.parseColor("#EC4857");
     public static int BtnON = ToggleON;
     public static int BtnOFF = Color.parseColor("#1E1E1E");
     public static int CategoryBG = Color.parseColor("#EC4857");
