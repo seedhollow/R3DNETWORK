@@ -58,6 +58,7 @@ public class IRadioButton {
             System.out.println(lists.get(i));
             radioButton.setText(lists.get(i));
             radioButton.setTextColor(Color.LTGRAY);
+            radioButton.setTypeface(typeface);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                 radioButton.setButtonTintList(ColorStateList.valueOf(Colors.RadioColor));
             radioButton.setOnClickListener(first_radio_listener);

@@ -214,6 +214,7 @@ public class Menu extends BaseMenu{
         hideBtn.setBackgroundColor(Color.TRANSPARENT);
         hideBtn.setText("HIDE/KILL (Hold)");
         hideBtn.setTextColor(TEXT_COLOR);
+        hideBtn.setTypeface(typeface);
         hideBtn.setOnClickListener(view -> {
             __mCollapsed.setVisibility(View.VISIBLE);
             __mCollapsed.setAlpha(0);
@@ -235,6 +236,7 @@ public class Menu extends BaseMenu{
         closeBtn.setLayoutParams(lParamsCloseBtn);
         closeBtn.setBackgroundColor(Color.TRANSPARENT);
         closeBtn.setText("MINIMIZE");
+        closeBtn.setTypeface(typeface);
         closeBtn.setTextColor(TEXT_COLOR);
         closeBtn.setOnClickListener(view -> {
             if (!isMenuCollapsed()){
