@@ -5,9 +5,6 @@
 #pragma once
 #include <jni.h>
 
-// Register native methods for com.android.support.Main
-int RegisterMain(JNIEnv *env);
-
 // Register native methods for com.android.support.Preferences
 int RegisterPreferences(JNIEnv *env);
 

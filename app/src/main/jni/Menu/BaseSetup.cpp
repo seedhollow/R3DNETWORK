@@ -9,24 +9,6 @@
 #include "Features.hpp"
 #include "BaseSetup.hpp"
 
-int RegisterMain(JNIEnv *env) {
-    jclass clazz = env->FindClass(OBFUSCATE("com/android/support/Main"));
-    if (!clazz) {
-        LOGE(OBFUSCATE("Main class not found"));
-        return JNI_ERR; // Class not found
-    }
-
-    JNINativeMethod methods[] = {
-            {OBFUSCATE("LoadNativeLibPath"), OBFUSCATE("(Ljava/lang/String;)V"), reinterpret_cast<void *>(LoadNativeLibPath)}
-    };
-
-    if (!clazz)
-        return JNI_ERR;
-    if (env->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(methods[0])) != 0)
-        return JNI_ERR;
-    return JNI_OK;
-}
-
 int RegisterPreferences(JNIEnv *env) {
     jclass clazz = env->FindClass(OBFUSCATE("com/android/support/Preferences"));
     if (!clazz) {

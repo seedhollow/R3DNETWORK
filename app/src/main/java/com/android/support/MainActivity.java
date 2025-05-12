@@ -39,6 +39,6 @@ public class MainActivity extends Activity {
 
         //Launch mod menu.
        // Main.StartWithoutPermission(this);
-        Main.Start(this);
+        Loader.Start(this);
     }
 }

@@ -18,11 +18,8 @@ public class Main {
         System.loadLibrary("GameHelper");
     }
 
-    public static native void LoadNativeLibPath(String path);
-
     public static void Start(Context context) {
         CrashHandler.init(context, false);
-        LoadNativeLibPath(context.getApplicationInfo().nativeLibraryDir);
         Intent intent = new Intent(context, Launcher.class);
         intent.putExtra(OVERLAY_PERMISSION_KEY, Utils.CheckOverlayPermissions(context));
         if (!Utils.CheckOverlayPermissions(context)){
