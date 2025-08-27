@@ -51,11 +51,11 @@ android {
     flavorDimensions += "layout"
 
     productFlavors {
-        spookynovaLayout {
+        seedhollow {
             dimension "layout"
             externalNativeBuild {
                 ndkBuild {
-                    arguments += "LAYOUT=spookynovaLayout"
+                    arguments += "LAYOUT=seedhollow"
                 }
             }
         }

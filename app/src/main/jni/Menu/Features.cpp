@@ -8,9 +8,14 @@
 #include "Includes/Draw.h"
 #include "Includes/Logger.h"
 #include "Includes/obfuscate.h"
+#include "KittyMemory/MemoryPatch.h"
 #include "Hacks/Vars.h"
 #include "Hacks/Offsets.h"
 #include "Hacks/Hooks.h"
+
+struct {
+    MemoryPatch g_HealthPtr;
+}Memory;
 
 void OnDrawLoad(JNIEnv *env, jclass clazz, jobject draw_view, jobject canvas) {
     Draw draw = Draw(env, draw_view, canvas);
@@ -34,12 +39,12 @@ jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
             OBFUSCATE("1_CollapseAdd_ICheckBox_Crosshair"),
             OBFUSCATE("2_CollapseAdd_ISpinner_Crosshair Color_Red,Green,Blue"),
             OBFUSCATE("3_CollapseAdd_ISlider_Crosshair Size_1_5"),
-            OBFUSCATE("4_CollapseAdd_ISwitch_Player Box"),
+            OBFUSCATE("4_CollapseAdd_ISwitch_God Mode"),
             OBFUSCATE("5_CollapseAdd_IRadioButton_Box Type_2D,3D"),
             OBFUSCATE("6_CollapseAdd_IInputText_Player Name"),
             OBFUSCATE("7_CollapseAdd_IInputInt_Player Health"),
             OBFUSCATE("8_CollapseAdd_IButton_Player ESP"),
-            OBFUSCATE("9_CollapseAdd_IButtonLink_Website_https://github.com/spookynova/IL2CppAndroid"),
+            OBFUSCATE("9_CollapseAdd_IButtonLink_Website_https://github.com/seedhollow/IL2CppAndroid"),
             OBFUSCATE("10_CollapseAdd_ICategory_Player Info"),
             OBFUSCATE("11_CollapseAdd_ITextView_<b>Player Info</b> <br> <i>Player Name: </i> <u>Unknown</u> <br> <i>Player Health: </i> <u>100</u>"),
             };
@@ -72,6 +77,18 @@ void Changes(JNIEnv *env, jclass clazz, jobject obj,jint featNum, jstring featNa
         case 3:
             Vars::PlayerData.CrosshairSize = value;
             break;
+        case 4:
+            Vars::PlayerData.godMode = boolean;
+            if (Memory.g_HealthPtr.isValid()) {
+                if (boolean) {
+                    Memory.g_HealthPtr.Modify();
+                } else {
+                    Memory.g_HealthPtr.Restore();
+                }
+            } else {
+                LOGE(OBFUSCATE("Health patch is not valid"));
+            }
+            break;
         default:
             break;
     }
@@ -88,4 +105,7 @@ void hook_thread() {
     // Example: m_pArgs = {"*", "*", "*"} if the method have 3 arguments
     UnityResolve::Hook(OBFUSCATE("PlayerManager"), OBFUSCATE("Update"), {}, (void *) PlayerUpdate, (void **) &orig_PlayerUpdate);
 
+    // ----------------- Patches -------------------
+    // You can patch the memory here
+    Memory.g_HealthPtr = MemoryPatch::createWithHex("libil2cpp.so", Offsets::CPlayerBase.Health, "FF 03 00 00", true);
 }

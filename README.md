@@ -17,7 +17,7 @@ This project is based on [LGL Mod Menu](https://github.com/LGLTeam/Android-Mod-M
 
 ## Layout Style
 
-Starting from version 1.4, `Il2cppAndroid` now supports two mod menu layouts: the new default layout and the LGL layout. You can switch between them using build flavors: `spookynovaLayout` for the new design and `lglLayout` for the classic LGL style.
+Starting from version 1.4, `Il2cppAndroid` now supports two mod menu layouts: the new default layout and the LGL layout. You can switch between them using build flavors: `seedhollow` for the new design and `lglLayout` for the classic LGL style.
 
 Special thanks to **[nik2143](https://github.com/nik2143)** for bringing back the LGL mod menu layout!
 
