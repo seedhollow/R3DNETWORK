@@ -107,5 +107,11 @@ void hook_thread() {
 
     // ----------------- Patches -------------------
     // You can patch the memory here
+#if defined(__aarch64__)
     Memory.g_HealthPtr = MemoryPatch::createWithHex("libil2cpp.so", Offsets::CPlayerBase.Health, "FF 03 00 00", true);
+
+#elif defined(__arm__)
+    Memory.g_HealthPtr = MemoryPatch::createWithHex("libil2cpp.so", Offsets::CPlayerBase.Health, "FF 03 00 00", true);
+#endif
+
 }
