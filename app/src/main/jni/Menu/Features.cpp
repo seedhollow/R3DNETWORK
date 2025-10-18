@@ -5,13 +5,15 @@
 #include "dobby.h"
 #include "Features.hpp"
 #include "../UnityResolve/UnityResolve.hpp"
-#include "Includes/Draw.h"
+#include "Includes/Draw.hpp"
+#include "Hacks/Visuals.hpp"
+#include "Hacks/Hooks.hpp"
 #include "Includes/Logger.h"
 #include "Includes/obfuscate.h"
 #include "KittyMemory/MemoryPatch.h"
 #include "Hacks/Vars.h"
 #include "Hacks/Offsets.h"
-#include "Hacks/Hooks.h"
+#include "Hacks/Hooks.hpp"
 
 struct {
     MemoryPatch g_HealthPtr;
@@ -20,7 +22,9 @@ struct {
 void OnDrawLoad(JNIEnv *env, jclass clazz, jobject draw_view, jobject canvas) {
     Draw draw = Draw(env, draw_view, canvas);
     if (draw.isValid()) {
-        DrawESP(draw, draw.getWidth(), draw.getHeight());
+        Visuals::Update(draw, draw.getWidth(), draw.getHeight());
+    } else {
+        LOGE(OBFUSCATE("Draw is not valid in OnDrawLoad"));
     }
 }
 
@@ -92,26 +96,4 @@ void Changes(JNIEnv *env, jclass clazz, jobject obj,jint featNum, jstring featNa
         default:
             break;
     }
-}
-
-void hook_thread() {
-    // ----------------- Hooks -------------------
-    // You can hook your methods here
-    // If your class have a namespace, you don't need to add the namespace to the class name
-    // Example RedNetwork.PlayerManager -> PlayerManager
-
-    // m_pArgs = {} if the method doesn't have any arguments
-    // if you're lazy to input type data on args, you can use "*" depends how many arguments the method have
-    // Example: m_pArgs = {"*", "*", "*"} if the method have 3 arguments
-    UnityResolve::Hook(OBFUSCATE("PlayerManager"), OBFUSCATE("Update"), {}, (void *) PlayerUpdate, (void **) &orig_PlayerUpdate);
-
-    // ----------------- Patches -------------------
-    // You can patch the memory here
-#if defined(__aarch64__)
-    Memory.g_HealthPtr = MemoryPatch::createWithHex("libil2cpp.so", Offsets::CPlayerBase.Health, "FF 03 00 00", true);
-
-#elif defined(__arm__)
-    Memory.g_HealthPtr = MemoryPatch::createWithHex("libil2cpp.so", Offsets::CPlayerBase.Health, "FF 03 00 00", true);
-#endif
-
 }

@@ -19,16 +19,14 @@
 #include "Includes/Utils.hpp"
 #include "Includes/RemapTools.h"
 #include "KittyMemory/MemoryPatch.h"
-#include "Includes/ObscuredTypes.h"
+#include "Includes/ObscuredTypes.hpp"
 #include "Includes/ESPManager.h"
 #include "Menu/BaseSetup.hpp"
 #include "Menu/Setup.hpp"
+#include "Hacks/Hooks.hpp"
 
 //Target lib here
 #define IL2CPP_MODULE OBFUSCATE("libil2cpp.so")
-
-void hook_thread();
-
 void *hack_thread(void *) {
     LOGI(OBFUSCATE("pthread created"));
 
@@ -44,11 +42,19 @@ void *hack_thread(void *) {
 
     sleep(5); // this is optional depending on your game if it takes time to load all the symbols
 
-    UnityResolve::Init(dlopen(IL2CPP_MODULE, RTLD_NOW));
+    auto p_handler = dlopen(IL2CPP_MODULE, RTLD_NOW);
+
+    // check if dlopen succeeded
+    if (!p_handler) {
+        LOGE(OBFUSCATE("Failed to dlopen %s: %s"), (const char *) IL2CPP_MODULE, dlerror());
+        return NULL;
+    }
+
+    UnityResolve::Init(p_handler);
 
     // Start hooking
     LOGI(OBFUSCATE("Starting hooks"));
-    hook_thread();
+    Hooks::InitHooks();
     return NULL;
 }
 
