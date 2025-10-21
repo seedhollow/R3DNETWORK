@@ -16,7 +16,6 @@ void Visuals::Update(Draw draw, int screenWidth, int screenHeight) {
 }
 
 void Visuals::DrawEspCrosshair(Draw draw) {
-    LOGD(OBFUSCATE("Drawing Crosshair"));
     // Draw ESP here
     Unity::Color crosshair_color {0, 0, 0, 255};
 
