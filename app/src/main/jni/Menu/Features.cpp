@@ -15,10 +15,6 @@
 #include "Hacks/Offsets.h"
 #include "Hacks/Hooks.hpp"
 
-struct {
-    MemoryPatch g_HealthPtr;
-}Memory;
-
 void OnDrawLoad(JNIEnv *env, jclass clazz, jobject draw_view, jobject canvas) {
     Draw draw = Draw(env, draw_view, canvas);
     if (draw.isValid()) {
@@ -83,15 +79,6 @@ void Changes(JNIEnv *env, jclass clazz, jobject obj,jint featNum, jstring featNa
             break;
         case 4:
             Vars::PlayerData.godMode = boolean;
-            if (Memory.g_HealthPtr.isValid()) {
-                if (boolean) {
-                    Memory.g_HealthPtr.Modify();
-                } else {
-                    Memory.g_HealthPtr.Restore();
-                }
-            } else {
-                LOGE(OBFUSCATE("Health patch is not valid"));
-            }
             break;
         default:
             break;
