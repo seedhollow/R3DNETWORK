@@ -28,13 +28,15 @@ void Hooks::PlayerUpdate(void *pInstance) {
     if (Vars::PlayerData.godMode) {
         uintptr_t healthOffset = 0x12; // Replace with actual offset
 
+        std::int32_t healthOffsetByName = UnityResolve::Get(OBFUSCATE("Assembly-CSharp.dll"))->Get(OBFUSCATE("Player"))->Get<UnityResolve::Field>(OBFUSCATE("health"))->offset;
+
         // set obscured type value
         ObscuredTypes::SetObscuredFloat(reinterpret_cast<uintptr_t>(pInstance) + healthOffset, 1000.0f);
         // this is how you set a field value using UnityResolve.hpp
         UnityResolve::Get(OBFUSCATE("Assembly-CSharp.dll"))->Get(OBFUSCATE("Player"))->SetValue(pInstance, OBFUSCATE("health"), 9999);
 
         // Alternatively, if you have the offset of the health field
-        UnityResolve::Get(OBFUSCATE("Assembly-CSharp.dll"))->Get(OBFUSCATE("Player"))->SetValue<int>(pInstance, healthOffset, 9999);
+        UnityResolve::Get(OBFUSCATE("Assembly-CSharp.dll"))->Get(OBFUSCATE("Player"))->SetValue<void>(pInstance, healthOffset, 9999);
 
         // void SetHealth(int health)
         UnityResolve::Get(OBFUSCATE("Assembly-CSharp.dll"))->Get(OBFUSCATE("Player"))->Get<UnityResolve::Method>(OBFUSCATE("SetHealth"), {"*"})->Invoke<void>(pInstance, 9999);
