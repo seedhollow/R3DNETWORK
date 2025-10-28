@@ -21,7 +21,15 @@ jstring FeatureModule::GetFeatureList(JNIEnv *env, jobject context) {
     return env->NewStringUTF(json.c_str());
 }
 
+
+/** Here you can add your features using the Widget system
+ * It's better to keep the IDs unique for each widget
+ * And now we have various widgets available like ICheckBox, ISwitch, ISlider, ISpinner, ICollapse, ICategory, IRadioButton, IInputText, IInputInt, IButtonLink
+ * Some feature are support some HTML tags like <font color=#FF0000>red text</font>
+ *Refer to the WidgetExport.hpp for all available widgets
+ **/
 void FeatureModule::RegisterFeatures() {
+
     Widget::Add(ICategory(OBFUSCATE("Player Settings")));
     Widget::Add(ISwitch(4, OBFUSCATE("God Mode"), OBFUSCATE("Player will not get any damage except <font color=#FFFF00>fall from the map </font>"), Vars::PlayerData.godMode));
     Widget::Add(ICollapse(OBFUSCATE("Visual Settings"), {

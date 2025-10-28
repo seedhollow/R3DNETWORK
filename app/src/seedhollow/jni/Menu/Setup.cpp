@@ -8,13 +8,13 @@
 bool iconValid, settingsValid, initValid;
 
 void Init(JNIEnv *env, jobject thiz, jobject ctx, jobject title, jobject bottomTitle){
-    setText(env, title, OBFUSCATE("<b>-=[ R3D Network ID ]=-</b>"));
-    setText(env, bottomTitle, OBFUSCATE("<b>- Modded by rrosetta | Platinmods.com -</b>"));
+    Menu::setText(env, title, OBFUSCATE("<b>-=[ R3D Network ID ]=-</b>"));
+    Menu::setText(env, bottomTitle, OBFUSCATE("<b>- Modded by rrosetta | Platinmods.com -</b>"));
 
     // Set Colored Text
     // setText(env, title, OBFUSCATE("<b><p style=\"color:green\">Modded by Nik2143</p></b>"));
 
-    showToast(env,ctx,OBFUSCATE("R3D Network ID"),ToastLength::LENGTH_LONG);
+    Menu::showToast(env,ctx,OBFUSCATE("R3D Network ID"),ToastLength::LENGTH_LONG);
 
     // Set Colored Toast
     //Toast(env,ctx,OBFUSCATE("<b><font color=lime>Modded by Nik2143 - Exclusive on www.Platinmods.com</font></b>"),ToastLength::LENGTH_LONG);

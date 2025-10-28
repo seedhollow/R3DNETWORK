@@ -1,8 +1,9 @@
 #include "Menu/Menu.hpp"
 #include "Includes/obfuscate.h"
 
+
 //Big letter cause crash
-void setText(JNIEnv *env, jobject obj, const char *text) {
+void Menu::setText(JNIEnv *env, jobject obj, const char *text) {
     //https://stackoverflow.com/a/33627640/3763113
     //A little JNI calls here. You really really need a great knowledge if you want to play with JNI stuff
     //Html.fromHtml("");
@@ -20,7 +21,7 @@ void setText(JNIEnv *env, jobject obj, const char *text) {
     (*env).CallVoidMethod(obj, setText, (*env).CallStaticObjectMethod(html, fromHtml, jstr));
 }
 
-void showDialog(jobject ctx, JNIEnv *env, const char *title, const char *msg){
+void Menu::showDialog(jobject ctx, JNIEnv *env, const char *title, const char *msg){
     jclass Alert = env->FindClass(OBFUSCATE("android/app/AlertDialog$Builder"));
     jmethodID AlertCons = env->GetMethodID(Alert, OBFUSCATE("<init>"), OBFUSCATE("(Landroid/content/Context;)V"));
 
@@ -47,7 +48,7 @@ void showDialog(jobject ctx, JNIEnv *env, const char *title, const char *msg){
     env->CallVoidMethod(creaetob, show);
 }
 
-void showToast(JNIEnv *env, jobject thiz, const char *text, int length) {
+void Menu::showToast(JNIEnv *env, jobject thiz, const char *text, int length) {
     jstring jstr = env->NewStringUTF(text);
     jclass html = (*env).FindClass(OBFUSCATE("android/text/Html"));
     jmethodID fromHtml = (*env).GetStaticMethodID(html, OBFUSCATE("fromHtml"), OBFUSCATE("(Ljava/lang/String;)Landroid/text/Spanned;"));
