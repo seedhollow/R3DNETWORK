@@ -13,5 +13,6 @@
 #include "IRadioButton.hpp"
 #include "IInputText.hpp"
 #include "IInputInt.hpp"
+#include "IButtonLink.hpp"
 
 #endif //IL2CPPANDROID_WIDGETEXPORT_HPP

@@ -32,11 +32,10 @@ void FeatureModule::RegisterFeatures() {
 
     Widget::Add(IInputText(5, "Player Name"));
     Widget::Add(IInputInt(6, "Player Age", 120));
+    Widget::Add(IButtonLink(7, "Visit Website", "https://github.com/seedhollow/R3DNETWORK"));
 }
 
-void FeatureModule::OnFeatureChanged(JNIEnv *env, jclass clazz, jobject obj,
-                                      jint featNum, jstring featName,
-                                      jint value, jboolean boolean, jstring str) {
+void FeatureModule::OnFeatureChanged(JNIEnv *env, jclass clazz, jobject obj, jint featNum, jstring featName, jint value, jboolean boolean, jstring str) {
 
     const char* name = env->GetStringUTFChars(featName, nullptr);
     const char* strVal = str != nullptr ? env->GetStringUTFChars(str, nullptr) : "";

@@ -27,13 +27,13 @@ public class FeatureParser {
     private static FeatureEntity parseObject(JSONObject obj) throws JSONException {
         FeatureEntity feature = new FeatureEntity();
 
-        feature.id = obj.optInt("id", 0);
-        feature.type = obj.optString("type", "");
-        feature.name = obj.optString("name", "");
-        feature.description = obj.optString("description", "");
-        feature.enabled = obj.optBoolean("enabled", false);
-        feature.min = obj.has("min") ? obj.getInt("min") : null;
-        feature.max = obj.has("max") ? obj.getInt("max") : null;
+        feature.id              = obj.optInt("id", 0);
+        feature.type            = obj.optString("type", "");
+        feature.name            = obj.optString("name", "");
+        feature.description     = obj.optString("description", "");
+        feature.enabled         = obj.optBoolean("enabled", false);
+        feature.min             = obj.has("min") ? obj.getInt("min") : null;
+        feature.max             = obj.has("max") ? obj.getInt("max") : null;
 
         if (obj.has("options")) {
             JSONArray opts = obj.getJSONArray("options");
