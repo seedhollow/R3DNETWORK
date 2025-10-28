@@ -22,7 +22,7 @@ public abstract class BaseMenu {
 
     protected native byte[] LoadFontData(Context context);
 
-    protected native String[] GetFeatureList();
+    protected native String GetFeatureList();
     private void InitTypeFace(Context context){
         typeface = Typeface.DEFAULT; //Init to default, if errors occurs, prevent crashes
         byte[] fontData = LoadFontData(context);

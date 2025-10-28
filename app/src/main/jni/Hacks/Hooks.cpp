@@ -14,6 +14,7 @@ void Hooks::InitHooks() {
     // m_pArgs = {} if the method doesn't have any arguments
     // if you're lazy to input type data on args, you can use "*" depends how many arguments the method have
     // Example: m_pArgs = {"*", "*", "*"} if the method have 3 arguments
+    // or you can use {"System.String", "System.Int32"} for more specific type matching
     UnityResolve::Hook(OBFUSCATE("PlayerManager"), OBFUSCATE("Update"), {}, (void *) Hooks::PlayerUpdate, (void **) &Hooks::orig_PlayerUpdate);
 
     // With DobbyHook
@@ -34,9 +35,6 @@ void Hooks::PlayerUpdate(void *pInstance) {
         ObscuredTypes::SetObscuredFloat(reinterpret_cast<uintptr_t>(pInstance) + healthOffset, 1000.0f);
         // this is how you set a field value using UnityResolve.hpp
         UnityResolve::Get(OBFUSCATE("Assembly-CSharp.dll"))->Get(OBFUSCATE("Player"))->SetValue(pInstance, OBFUSCATE("health"), 9999);
-
-        // Alternatively, if you have the offset of the health field
-        UnityResolve::Get(OBFUSCATE("Assembly-CSharp.dll"))->Get(OBFUSCATE("Player"))->SetValue<void>(pInstance, healthOffset, 9999);
 
         // void SetHealth(int health)
         UnityResolve::Get(OBFUSCATE("Assembly-CSharp.dll"))->Get(OBFUSCATE("Player"))->Get<UnityResolve::Method>(OBFUSCATE("SetHealth"), {"*"})->Invoke<void>(pInstance, 9999);

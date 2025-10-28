@@ -7,6 +7,8 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.text.Html;
+import android.view.Gravity;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,47 +27,61 @@ public class ICheckBox {
         this.typeface = typeface;
     }
 
-    public void add(LinearLayout mContent, final int featNum, final String featName, boolean switchedOn) {
+    public void add(LinearLayout mContent, final int featNum, final String featName, final String featDesc, boolean switchedOn) {
         LinearLayout mLayoutContainer = new LinearLayout(context);
         mLayoutContainer.setOrientation(LinearLayout.HORIZONTAL);
+        mLayoutContainer.setPadding(10, 10, 10, 10);
+        mLayoutContainer.setBackgroundColor(Color.parseColor("#00000000"));
+        mLayoutContainer.setGravity(Gravity.CENTER_VERTICAL);
 
-        final CheckBox checkBox = new CheckBox(context);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
-        layoutParams.setMargins(0, 2, 5, 2);
-        checkBox.setLayoutParams(layoutParams);
-        checkBox.setTextColor(Colors.TEXT_COLOR_2);
+        // ========== Left text area ==========
+        LinearLayout mTextContainer = new LinearLayout(context);
+        mTextContainer.setOrientation(LinearLayout.VERTICAL);
+        mTextContainer.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
 
-        // Text
+        // Feature title
         final TextView textView = new TextView(context);
-        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-        textView.setLayoutParams(textParams);
-        textView.setText(featName);
+        textView.setText(Html.fromHtml(featName));
         textView.setTextColor(Colors.TEXT_COLOR_2);
         textView.setTypeface(typeface);
-        textView.setPadding(10, 5, 0, 5);
+        textView.setTextSize(15);
+        mTextContainer.addView(textView);
 
-        mLayoutContainer.addView(textView);
-        mLayoutContainer.addView(checkBox);
-
-        if (Preferences.loadPrefBool(featName, featNum, switchedOn)) {
-            mLayoutContainer.setBackgroundColor(Color.parseColor("#40EC4857"));
-        } else {
-            mLayoutContainer.setBackgroundColor(Color.parseColor("#00000000"));
+        // Optional description below the title
+        if (featDesc != null && !featDesc.isEmpty()) {
+            final TextView descView = new TextView(context);
+            descView.setText(Html.fromHtml(featDesc));
+            descView.setTextColor(Colors.TEXT_COLOR_2);
+            descView.setTypeface(typeface);
+            descView.setTextSize(12);
+            descView.setPadding(0, 5, 0, 5);
+            mTextContainer.addView(descView);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            checkBox.setButtonTintList(ColorStateList.valueOf(Colors.CheckBoxColor));
-        checkBox.setChecked(Preferences.loadPrefBool(featName, featNum, switchedOn));
-//        checkBox.setBackgroundColor(Colors.OtherBG);
-        checkBox.setOnCheckedChangeListener((v, isChecked) -> {
-            if (checkBox.isChecked()) {
-                Preferences.changeFeatureBool(featName, featNum, isChecked);
-                mLayoutContainer.setBackgroundColor(Color.parseColor("#40EC4857"));
-            } else {
-                Preferences.changeFeatureBool(featName, featNum, isChecked);
-                mLayoutContainer.setBackgroundColor(Color.parseColor("#00000000"));
-            }
+        // ========== Checkbox ==========
+        final CheckBox checkBox = new CheckBox(context);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+        layoutParams.setMargins(10, 0, 0, 0);
+        checkBox.setLayoutParams(layoutParams);
+        checkBox.setTextColor(Colors.TEXT_COLOR_2);
+        checkBox.setButtonTintList(ColorStateList.valueOf(Colors.CheckBoxColor));
+
+        boolean isOn = Preferences.loadPrefBool(featName, featNum, switchedOn);
+        checkBox.setChecked(isOn);
+        mLayoutContainer.setBackgroundColor(isOn ? Color.parseColor("#40EC4857") : Color.parseColor("#00000000"));
+
+        mLayoutContainer.setOnClickListener(v -> {
+            checkBox.performClick();
         });
+
+        checkBox.setOnCheckedChangeListener((v, isChecked) -> {
+            Preferences.changeFeatureBool(featName, featNum, isChecked);
+            mLayoutContainer.setBackgroundColor(isChecked ? Color.parseColor("#40EC4857") : Color.parseColor("#00000000"));
+        });
+
+        // Add to main container
+        mLayoutContainer.addView(mTextContainer);
+        mLayoutContainer.addView(checkBox);
         mContent.addView(mLayoutContainer);
     }
 }

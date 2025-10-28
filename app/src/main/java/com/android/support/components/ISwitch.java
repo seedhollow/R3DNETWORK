@@ -1,14 +1,19 @@
 package com.android.support.components;
 
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.text.Html;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.android.support.Preferences;
 
@@ -19,18 +24,55 @@ public class ISwitch {
 
     private final Context context;
     private final Typeface typeface;
+
     public ISwitch(Context context, Typeface typeface) {
         this.context = context;
         this.typeface = typeface;
     }
 
-    public void add(LinearLayout mContent, final int featNum, final String featName, boolean swiOn) {
+    // Added featDesc parameter
+    public void add(LinearLayout mContent, final int featNum, final String featName, final String featDesc, boolean swiOn) {
 
-        LinearLayout.LayoutParams mLayoutParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        mLayoutParam.setMargins(0, 2, 0, 2);
+        // ======= Container Layout =======
+        LinearLayout mLayoutContainer = new LinearLayout(context);
+        mLayoutContainer.setOrientation(LinearLayout.HORIZONTAL);
+        mLayoutContainer.setPadding(10, 10, 10, 10);
+        mLayoutContainer.setBackgroundColor(Color.parseColor("#00000000"));
+        mLayoutContainer.setGravity(Gravity.CENTER_VERTICAL);
 
+        // ======= Text Area (title + desc) =======
+        LinearLayout mTextContainer = new LinearLayout(context);
+        mTextContainer.setOrientation(LinearLayout.VERTICAL);
+        mTextContainer.setLayoutParams(new LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f));
+
+        // Feature Title
+        final TextView textView = new TextView(context);
+        textView.setText(Html.fromHtml(featName));
+        textView.setTextColor(Colors.TEXT_COLOR_2);
+        textView.setTypeface(typeface);
+        textView.setTextSize(15);
+        mTextContainer.addView(textView);
+
+        // Optional Description
+        if (featDesc != null && !featDesc.isEmpty()) {
+            final TextView descView = new TextView(context);
+            descView.setText(Html.fromHtml(featDesc));
+            descView.setTypeface(typeface);
+            descView.setTextColor(Colors.TEXT_COLOR_2);
+            descView.setTextSize(12);
+            descView.setPadding(0, 5, 0, 5);
+            mTextContainer.addView(descView);
+        }
+
+        // ======= Switch =======
         final Switch mSwitch = new Switch(context);
-        mSwitch.setLayoutParams(mLayoutParam);
+        LinearLayout.LayoutParams switchParams = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+        switchParams.setMargins(30, 0, 0, 0);
+        mSwitch.setLayoutParams(switchParams);
+        mSwitch.setTextColor(Colors.TEXT_COLOR_2);
+        mSwitch.setTypeface(typeface);
+
+        // Set switch color states
         ColorStateList buttonStates = new ColorStateList(
                 new int[][]{
                         new int[]{-android.R.attr.state_enabled},
@@ -39,39 +81,33 @@ public class ISwitch {
                 },
                 new int[]{
                         Color.BLUE,
-                        Colors.ToggleON, // ON
-                        Colors.ToggleOFF // OFF
+                        Colors.ToggleON,
+                        Colors.ToggleOFF
                 }
         );
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            try {
-                mSwitch.getThumbDrawable().setTintList(buttonStates);
-                mSwitch.getTrackDrawable().setTintList(buttonStates);
-            } catch (NullPointerException ex) {
-                Log.d("Mod_Menu", String.valueOf(ex));
-            }
+
+        try {
+            mSwitch.getThumbDrawable().setTintList(buttonStates);
+            mSwitch.getTrackDrawable().setTintList(buttonStates);
+        } catch (NullPointerException ex) {
+            Log.d("R3D NETWORK ID", String.valueOf(ex));
         }
 
-        if (Preferences.loadPrefBool(featName, featNum, swiOn)) {
-            mSwitch.setBackgroundColor(Color.parseColor("#40EC4857"));
-        } else {
-            mSwitch.setBackgroundColor(Color.parseColor("#00000000"));
-        }
+        boolean isOn = Preferences.loadPrefBool(featName, featNum, swiOn);
+        mSwitch.setChecked(isOn);
+        mLayoutContainer.setBackgroundColor(isOn ? Color.parseColor("#40EC4857") : Color.parseColor("#00000000"));
 
-        mSwitch.setText(featName);
-        mSwitch.setTextColor(Colors.TEXT_COLOR_2);
-        mSwitch.setTypeface(typeface);
-        mSwitch.setPadding(10, 5, 0, 5);
-        mSwitch.setChecked(Preferences.loadPrefBool(featName, featNum, swiOn));
-        mSwitch.setOnCheckedChangeListener((compoundButton, bool) -> {
-            if (mSwitch.isChecked()) {
-                Preferences.changeFeatureBool(featName, featNum, bool);
-                mSwitch.setBackgroundColor(Color.parseColor("#40EC4857"));
-            } else {
-                Preferences.changeFeatureBool(featName, featNum, bool);
-                mSwitch.setBackgroundColor(Color.parseColor("#00000000"));
-            }
+        // ======= Behavior =======
+        mLayoutContainer.setOnClickListener(v -> mSwitch.performClick());
+
+        mSwitch.setOnCheckedChangeListener((v, isChecked) -> {
+            Preferences.changeFeatureBool(featName, featNum, isChecked);
+            mLayoutContainer.setBackgroundColor(isChecked ? Color.parseColor("#40EC4857") : Color.parseColor("#00000000"));
         });
-        mContent.addView(mSwitch);
+
+        // ======= Add views =======
+        mLayoutContainer.addView(mTextContainer);
+        mLayoutContainer.addView(mSwitch);
+        mContent.addView(mLayoutContainer);
     }
 }
