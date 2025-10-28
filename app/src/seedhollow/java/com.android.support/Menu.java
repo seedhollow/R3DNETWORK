@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import java.util.Arrays;
+import java.util.List;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -37,6 +38,7 @@ import com.android.support.components.ISlider;
 import com.android.support.components.ISpinner;
 import com.android.support.components.ISwitch;
 import com.android.support.components.ITextView;
+import com.android.support.entity.FeatureEntity;
 
 import org.lsposed.lsparanoid.Obfuscate;
 
@@ -288,8 +290,6 @@ public class Menu extends BaseMenu {
                         initialTouchY = motionEvent.getRawY();
                         return true;
                     case MotionEvent.ACTION_UP:
-                        int rawX = (int) (motionEvent.getRawX() - initialTouchX);
-                        int rawY = (int) (motionEvent.getRawY() - initialTouchY);
                         __mExpanded.setAlpha(1f);
                         return true;
                     case MotionEvent.ACTION_MOVE:
@@ -307,7 +307,9 @@ public class Menu extends BaseMenu {
         };
     }
 
-    private void featureList(String[] features, LinearLayout linearLayout) {
+    private void featureList(String feature, LinearLayout linearLayout) {
+
+        List<FeatureEntity> features = FeatureParser.parse(feature);
         // App details
         iTextView.add(linearLayout, "App Package: " + getContext.getPackageName());
         // AppName
@@ -319,82 +321,68 @@ public class Menu extends BaseMenu {
             e.printStackTrace();
         }
 
-        int m_featureNumber, m_subFeature = 0;
-        LinearLayout originalLayout = linearLayout;
+        for (FeatureEntity item : features) {
+            if (ComponentType.valueOf(item.type) == ComponentType.ICollapse) {// Add the collapse group first
+                iCollapse.add(linearLayout, item.name, item.enabled);
 
-        for (String item : features) {
-            boolean switchedOn = item.contains("_True");
-            String feature = switchedOn ? item.replaceFirst("_True", "") : item;
-
-            // Restore original layout if necessary
-            linearLayout = originalLayout;
-            if (feature.contains("CollapseAdd_")) {
-                linearLayout = iCollapse.getCollapseContent();
-                feature = feature.replaceFirst("CollapseAdd_", "");
+                // Then render its children inside the collapseContent
+                if (item.children != null && !item.children.isEmpty()) {
+                    LinearLayout collapseContent = iCollapse.getCollapseContent();
+                    for (FeatureEntity child : item.children) {
+                        addFeatureComponent(collapseContent, child);
+                    }
+                }
+            } else {// Non-collapse items
+                addFeatureComponent(linearLayout, item);
             }
-
-            // Process feature number if present
-            String[] featureParts = feature.split("_");
-            if (TextUtils.isDigitsOnly(featureParts[0]) || featureParts[0].matches("-[0-9]*")) {
-                m_featureNumber = Integer.parseInt(featureParts[0]);
-                feature = feature.replaceFirst(featureParts[0] + "_", "");
-                m_subFeature++;
-            } else {
-                m_featureNumber = features.length - m_subFeature;
-            }
-
-            // Handle feature addition
-            addFeatureToLayout(linearLayout, m_featureNumber, feature.split("_"), switchedOn);
         }
     }
-
-    // Method to add each feature based on its type
-    // featureParts[0] is the type of feature like ISwitch, IButton, etc.
-    // featureParts[1] is the name of the feature
-    // featureParts[2] is the value of the feature
-    // featureParts[3] is the max value of the feature
-    private void addFeatureToLayout(LinearLayout layout, int featNum, String[] featureParts, boolean switchedOn) {
-        switch (featureParts[0]) {
-            case "ISwitch":
-                iSwitch.add(layout, featNum, featureParts[1], switchedOn);
+    private void addFeatureComponent(LinearLayout layout, FeatureEntity item) {
+        ComponentType type = ComponentType.valueOf(item.type);
+        switch (type) {
+            case ICheckBox:
+                iCheckBox.add(layout, item.id, item.name, item.description, item.enabled);
                 break;
-            case "ISlider":
-                iSlider.add(layout, featNum, featureParts[1], Integer.parseInt(featureParts[2]), Integer.parseInt(featureParts[3]));
+            case ISlider:
+                iSlider.add(layout, item.id, item.name, item.min, item.max);
                 break;
-            case "IButton":
-                iButton.add(layout, featNum, featureParts[1]);
+            case ISpinner:
+                if (item.options != null) {
+                    iSpinner.add(layout, item.id, item.name, String.join(",", item.options));
+                }
                 break;
-            case "ISpinner":
-                iSpinner.add(layout, featNum, featureParts[1], featureParts[2]);
+            case ISwitch:
+                iSwitch.add(layout, item.id, item.name, item.description, item.enabled);
                 break;
-            case "IInputText":
-                iInputText.add(layout, featNum, featureParts[1]);
+            case IButton:
+                iButton.add(layout, item.id, item.name);
                 break;
-            case "IInputInt":
-                iInputInt.add(layout, featNum, featureParts.length == 3 ? featureParts[2] : featureParts[1], featureParts.length == 3 ? Integer.parseInt(featureParts[1]) : 0);
+            case IInputText:
+                iInputText.add(layout, item.id, item.name);
                 break;
-            case "ICheckBox":
-                iCheckBox.add(layout, featNum, featureParts[1], switchedOn);
+            case IInputInt:
+                iInputInt.add(layout, item.id, item.name, item.max);
                 break;
-            case "IRadioButton":
-                iRadioButton.add(layout, featNum, featureParts[1], featureParts[2]);
+            case IRadioButton:
+                if (item.options != null) {
+                    iRadioButton.add(layout, item.id, item.name, String.join(",", Arrays.asList(item.options)));
+                }
                 break;
-            case "ICollapse":
-                iCollapse.add(layout, featureParts[1], switchedOn);
+            case IButtonLink:
+                iButtonLink.add(layout, item.name, item.description);
                 break;
-            case "IButtonLink":
-                iButtonLink.add(layout, featureParts[1], featureParts[2]);
+            case ICategory:
+                iCategory.add(layout, item.name);
                 break;
-            case "ICategory":
-                iCategory.add(layout, featureParts[1]);
-                break;
-            case "ITextView":
-                iTextView.add(layout, featureParts[1]);
+            case ITextView:
+                iTextView.add(layout, item.name);
                 break;
             default:
-                Log.e(TAG, "Feature not found: " + Arrays.toString(featureParts));
+                Log.e(TAG, "Unknown feature type: " + item.type);
+                break;
         }
     }
+
 
     private boolean isViewCollapsed() {
         return !isExpanded;

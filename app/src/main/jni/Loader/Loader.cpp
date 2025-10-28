@@ -48,13 +48,13 @@ jboolean isRemapSuccess(JNIEnv *env, jclass clazz) {
 }
 
 int RegisterLoader(JNIEnv* env) {
-    jclass clazz = env->FindClass("com/android/support/Loader");
+    jclass clazz = env->FindClass(OBFUSCATE("com/android/support/Loader"));
     if (!clazz) {
         return JNI_ERR; // Class not found
     }
 
     static const JNINativeMethod methods[] = {
-            {"isRemapSuccess", "()Z", reinterpret_cast<void*>(isRemapSuccess)},
+            {OBFUSCATE("isRemapSuccess"), OBFUSCATE("()Z"), reinterpret_cast<void*>(isRemapSuccess)},
     };
 
     if (env->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(methods[0])) != JNI_OK) {

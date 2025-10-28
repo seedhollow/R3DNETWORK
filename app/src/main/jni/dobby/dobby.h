@@ -154,7 +154,7 @@ int DobbyWrap(void *function_address, PreCallTy pre_call, PostCallTy post_call);
 const char *DobbyBuildVersion();
 
 // replace function
-int DobbyHook(void *address, void *replace_call, void **origin_call);
+int DobbyHook(void *address, void *p_detour, void **p_original);
 
 // dynamic binary instrument for instruction
 // [!!! READ ME !!!]

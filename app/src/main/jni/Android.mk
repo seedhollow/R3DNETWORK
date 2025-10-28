@@ -27,13 +27,17 @@ LOCAL_STATIC_LIBRARIES := libdobby
 # Here you add the cpp file to compile
 LOCAL_SRC_FILES := $(LOCAL_PATH)/Main.cpp \
 	$(LOCAL_PATH)/Includes/Utils.cpp \
-	$(LOCAL_PATH)/Menu/BaseSetup.cpp \
-	$(LOCAL_PATH)/Menu/Features.cpp \
+	$(LOCAL_PATH)/Includes/Draw.cpp \
+	$(LOCAL_PATH)/Includes/ObscuredTypes.cpp \
+	$(LOCAL_PATH)/Menu/JNILoader.cpp \
+	$(LOCAL_PATH)/Menu/FeatureModule.cpp \
 	$(LOCAL_PATH)/Menu/Menu.cpp \
 	$(LOCAL_PATH)/KittyMemory/KittyMemory.cpp \
 	$(LOCAL_PATH)/KittyMemory/MemoryPatch.cpp \
     $(LOCAL_PATH)/KittyMemory/MemoryBackup.cpp \
     $(LOCAL_PATH)/KittyMemory/KittyUtils.cpp \
+    $(LOCAL_PATH)/Hacks/Hooks.cpp \
+    $(LOCAL_PATH)/Hacks/Visuals.cpp \
 
 # Convert comma-separated string to space-separated list
 FLAVOR_DIMENSION_VARS := LAYOUT

@@ -9,16 +9,16 @@ public:
         enemies = new std::vector<enemy_t *>();
     }
 
-    bool isEnemyPresent(void *enemyObject) {
-        for (std::vector<enemy_t *>::iterator it = enemies->begin(); it != enemies->end(); it++) {
-            if ((*it)->object == enemyObject) {
+    bool isEnemyPresent(void *enemyObject) const {
+        for (auto & enemy : *enemies) {
+            if (enemy->object == enemyObject) {
                 return true;
             }
         }
         return false;
     }
 
-    void tryAddEnemy(void *enemyObject) {
+    void tryAddEnemy(void *enemyObject) const {
         if (isEnemyPresent(enemyObject)) {
             return;
         }
@@ -27,7 +27,7 @@ public:
         enemies->push_back(newEnemy);
     }
 
-    void removeEnemyGivenObject(void *enemyObject) {
+    void removeEnemyGivenObject(void *enemyObject) const {
         for (int i = 0; i < enemies->size(); i++) {
             if ((*enemies)[i]->object == enemyObject) {
                 enemies->erase(enemies->begin() + i);

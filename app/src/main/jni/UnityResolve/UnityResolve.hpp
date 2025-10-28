@@ -11,6 +11,7 @@
 #include <functional>
 #include <numbers>
 #include <sys/mman.h>
+#include "dobby.h"
 
 #ifdef USE_GLM
 #include <glm/glm.hpp>

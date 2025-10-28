@@ -5,6 +5,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
+import android.text.Html;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -29,6 +30,10 @@ public class ICollapse {
 
     public LinearLayout getCollapseContent() {
         return mCollapseContent;
+    }
+
+    public void setCollapseContent(LinearLayout mCollapseContent) {
+        this.mCollapseContent = mCollapseContent;
     }
 
     public void add(LinearLayout mContent, final String text, final boolean expanded) {
@@ -62,7 +67,7 @@ public class ICollapse {
 
         final TextView textView = new TextView(context);
 //        textView.setBackgroundColor(MENU_BG_COLOR);
-        textView.setText(" ▶ " + text);
+        textView.setText(" ▶ " + Html.fromHtml(text));
         textView.setGravity(Gravity.START);
         textView.setTextColor(Colors.TEXT_COLOR_2);
         textView.setTypeface(typeface, Typeface.BOLD);
@@ -71,7 +76,7 @@ public class ICollapse {
 
         if (expanded) {
             collapseContent.setVisibility(View.VISIBLE);
-            textView.setText(" ▼ " + text);
+            textView.setText(" ▼ " + Html.fromHtml(text));
         }
 
         textView.setOnClickListener(new View.OnClickListener() {
