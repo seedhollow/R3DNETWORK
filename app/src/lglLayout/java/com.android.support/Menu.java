@@ -435,7 +435,7 @@ public class Menu extends BaseMenu{
                 iCategory.add(layout, item.name);
                 break;
             case ITextView:
-                iTextView.add(layout, item.name);
+                iTextView.add(layout, item.description);
                 break;
             default:
                 Log.e(TAG, "Unknown feature type: " + item.type);
