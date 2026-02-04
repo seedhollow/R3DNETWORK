@@ -17,7 +17,7 @@ This project is based on [LGL Mod Menu](https://github.com/LGLTeam/Android-Mod-M
 
 ## Layout Style
 
-Starting from version 1.4, `Il2cppAndroid` now supports two mod menu layouts: the new default layout and the LGL layout. You can switch between them using build flavors: `seedhollow` for the new design and `lglLayout` for the classic LGL style.
+Starting from version 1.4, `R3DNETWORK` now supports two mod menu layouts: the new default layout and the LGL layout. You can switch between them using build flavors: `seedhollow` for the new design and `lglLayout` for the classic LGL style.
 
 Special thanks to **[nik2143](https://github.com/nik2143)** for bringing back the LGL mod menu layout!
 
@@ -90,6 +90,9 @@ jbyteArray LoadFontData(JNIEnv *env, jclass thiz, jobject ctx) {
 
 #### 3. Updating the Font Variable
 Replace the `font` variable in the code above with the array from your exported font file. This ensures that the custom font is correctly loaded and utilized in the project.
+
+## Project
+- [Arknights DLC](https://github.com/seedhollow/arknights-dlc) Simple Game Helper for better experience.
 
 ## Credits
 
