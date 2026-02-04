@@ -14,5 +14,6 @@
 #include "IInputText.hpp"
 #include "IInputInt.hpp"
 #include "IButtonLink.hpp"
+#include "ITextView.hpp"
 
 #endif //IL2CPPANDROID_WIDGETEXPORT_HPP
