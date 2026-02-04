@@ -30,6 +30,7 @@ jstring FeatureModule::GetFeatureList(JNIEnv *env, jobject context) {
  **/
 void FeatureModule::RegisterFeatures() {
 
+    Widget::Add(ITextView(OBFUSCATE("Welcome to <font color=#00FF00 >R3D Network ID</font> mod menu! Here you can customize your gameplay experience.")));
     Widget::Add(ICategory(OBFUSCATE("Player Settings")));
     Widget::Add(ISwitch(4, OBFUSCATE("God Mode"), OBFUSCATE("Player will not get any damage except <font color=#FFFF00>fall from the map </font>"), Vars::PlayerData.godMode));
     Widget::Add(ICollapse(OBFUSCATE("Visual Settings"), {
