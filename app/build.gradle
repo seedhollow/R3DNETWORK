@@ -29,7 +29,7 @@ android {
         minSdkVersion 21
         targetSdk 34
         versionCode 1
-        versionName "1.5.0"
+        versionName "2.0.0"
         ndk {
             abiFilters 'armeabi-v7a', 'arm64-v8a' , 'x86', 'x86_64'
         }
@@ -45,27 +45,6 @@ android {
             shrinkResources false
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
-
-    flavorDimensions += "layout"
-
-    productFlavors {
-        seedhollow {
-            dimension "layout"
-            externalNativeBuild {
-                ndkBuild {
-                    arguments += "LAYOUT=seedhollow"
-                }
-            }
-        }
-        lglLayout {
-            dimension "layout"
-            externalNativeBuild {
-                ndkBuild {
-                    arguments += "LAYOUT=lglLayout"
-                }
-            }
         }
     }
 

@@ -32,28 +32,13 @@ LOCAL_SRC_FILES := $(LOCAL_PATH)/Main.cpp \
 	$(LOCAL_PATH)/Menu/JNILoader.cpp \
 	$(LOCAL_PATH)/Menu/FeatureModule.cpp \
 	$(LOCAL_PATH)/Menu/Menu.cpp \
+	$(LOCAL_PATH)/Menu/Setup.cpp \
 	$(LOCAL_PATH)/KittyMemory/KittyMemory.cpp \
 	$(LOCAL_PATH)/KittyMemory/MemoryPatch.cpp \
     $(LOCAL_PATH)/KittyMemory/MemoryBackup.cpp \
     $(LOCAL_PATH)/KittyMemory/KittyUtils.cpp \
     $(LOCAL_PATH)/Hacks/Hooks.cpp \
     $(LOCAL_PATH)/Hacks/Visuals.cpp \
-
-# Convert comma-separated string to space-separated list
-FLAVOR_DIMENSION_VARS := LAYOUT
-
-# Dynamically include Android.mk from each flavor path
-$(foreach FLAVOR_DIMENSION,$(FLAVOR_DIMENSION_VARS),\
-    $(eval FLAVOR := $($(FLAVOR_DIMENSION))) \
-    $(if $(FLAVOR),\
-        $(info Including JNI for $(FLAVOR_DIMENSION)=$(FLAVOR))\
-        $(if $(wildcard $(LOCAL_PATH)/../../$(FLAVOR)/jni/Android.mk),\
-            $(eval include $(LOCAL_PATH)/../../$(FLAVOR)/jni/Android.mk),\
-            $(warning Missing Android.mk for flavor: $(FLAVOR))\
-        ),\
-        $(warning No value set for dimension $(FLAVOR_DIMENSION))\
-    )\
-)
 
 include $(BUILD_SHARED_LIBRARY)
 

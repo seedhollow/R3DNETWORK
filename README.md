@@ -1,4 +1,4 @@
-![Mod Preview](https://github.com/user-attachments/assets/1102b880-769e-4439-9221-2ac579f65235)
+![Mod Preview](img/preview.png)
 
 # IL2CPP Android Template
 
@@ -15,14 +15,24 @@ This project is based on [LGL Mod Menu](https://github.com/LGLTeam/Android-Mod-M
 > 
 > New feature suggestions or bugs can be commit as issues.
 
-## Layout Style
+## Menu Layout
 
-Starting from version 1.4, `R3DNETWORK` now supports two mod menu layouts: the new default layout and the LGL layout. You can switch between them using build flavors: `seedhollow` for the new design and `lglLayout` for the classic LGL style.
+Starting from version 2, the menu has a single layout built, a floating bubble that opens a panel with a tab sidebar on the left and feature cards on the right. The LGL layout and the build flavors were removed from this version, it's hard to maintenance lol
 
-Special thanks to **[nik2143](https://github.com/nik2143)** for bringing back the LGL mod menu layout!
+Features are declared in `Menu/FeatureModule.cpp`. Each `ITab` becomes a sidebar entry, and an `ICollapse` opens its children as a sub-page:
 
+```cpp
+Widget::Add(ITab(OBFUSCATE("Visuals"), OBFUSCATE("eye"), {
+        ITab::Child(ISwitch(1, OBFUSCATE("ESP"), OBFUSCATE("Shown when tapping the ? badge"))),
+        ITab::Child(ICollapse(OBFUSCATE("Crosshair Settings"), {
+                ICollapse::Child(ISlider(3, OBFUSCATE("Crosshair Size"), 10, 100)),
+        })),
+}));
+```
 
-![Build Flavor](https://raw.githubusercontent.com/seedhollow/IL2CppAndroid/refs/heads/main/img/build-flavor.png)
+Tab icons: `grid`, `hex`, `bell-off`, `wand`, `shield`, `eye`, `target`, `user`, `bolt`, `gear`, `info`, `star`, `gamepad`, `sword`. Widgets added outside an `ITab` go into a "General" tab, and a "Settings" tab is added automatically with a "Save settings" switch (restores your last values on the next start), the credit line and app info.
+
+Colors, sizes and fonts live in `components/Theme.java`.
 
 ## How to use
 To enable and display a floating menu in your target app, follow these steps:
@@ -71,13 +81,13 @@ To export a font, follow these steps:
 #### 2. Importing the Font into Your Project  
 
 1. Copy the exported `.h` font file to the `Includes/Fonts/` directory.  
-2. Open `Utils.h` located in the `Includes` folder.  
-3. Locate the `LoadFontData` method and modify it to use the newly exported font.  
+2. Open `Menu/JNILoader.cpp` and include your font header in place of `Includes/Fonts/Pixellari.h`.  
+3. Locate the `JNILoader::LoadFontData` method and modify it to use the newly exported font.  
 
 #### Example: Modifying `LoadFontData`  
 
 ```cpp
-jbyteArray LoadFontData(JNIEnv *env, jclass thiz, jobject ctx) {
+jbyteArray JNILoader::LoadFontData(JNIEnv *env, jobject thiz, jobject ctx) {
     // Create a byte array in Java to hold the font data
     jbyteArray fontData = env->NewByteArray(std::size(font));
 
@@ -90,6 +100,9 @@ jbyteArray LoadFontData(JNIEnv *env, jclass thiz, jobject ctx) {
 
 #### 3. Updating the Font Variable
 Replace the `font` variable in the code above with the array from your exported font file. This ensures that the custom font is correctly loaded and utilized in the project.
+
+#### 4. Enabling the Font in the Menu
+The menu uses the system sans-serif font by default. Set `Theme.USE_CUSTOM_FONT = true` in `components/Theme.java` to use the font returned by `LoadFontData`.
 
 ## Project
 - [Arknights DLC](https://github.com/seedhollow/arknights-dlc) Simple Game Helper for better experience.

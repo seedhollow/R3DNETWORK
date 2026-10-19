@@ -1,89 +1,98 @@
 package com.android.support.components;
 
-import android.content.Context;
-import android.graphics.PorterDuff;
-import android.graphics.Typeface;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
+import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.support.Preferences;
+import com.android.support.entity.FeatureEntity;
 
 import org.lsposed.lsparanoid.Obfuscate;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 @Obfuscate
 public class ISpinner {
 
-    private final Context context;
-    private final Typeface typeface;
+    private final Ui ui;
 
-    public ISpinner(Context context, Typeface typeface) {
-        this.context = context;
-        this.typeface = typeface;
+    public ISpinner(Ui ui) {
+        this.ui = ui;
     }
 
-    public void add(LinearLayout mContent, final int featNum, final String featName, final String list) {
-        final List<String> lists = new LinkedList<>(Arrays.asList(list.split(",")));
+    public View build(FeatureEntity item) {
+        if (item.options == null || item.options.length == 0) return null;
+        String[] options = item.options;
+        int[] selected = {clamp(Preferences.loadPrefInt(item.name, item.id), options.length)};
 
-        LinearLayout.LayoutParams mLayoutParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        mLayoutParam.setMargins(0, 2, 0, 2);
+        LinearLayout card = ui.card(false, false);
 
-        LinearLayout mLayoutContainer = new LinearLayout(context);
-        mLayoutContainer.setOrientation(LinearLayout.VERTICAL);
-        mLayoutContainer.setLayoutParams(mLayoutParam);
+        LinearLayout header = ui.row();
+        header.setClickable(true);
+        header.addView(ui.label(item.name, item.description), ui.weight());
+        TextView value = ui.text(Ui.html(options[selected[0]]), Theme.TEXT_BODY, Theme.TEXT_DIM, ui.regular);
+        header.addView(value, new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
+        IconView chevron = ui.icon("chevron-down", 14, Theme.TEXT_DIM);
+        ((LinearLayout.LayoutParams) chevron.getLayoutParams()).leftMargin = ui.dp(8);
+        header.addView(chevron);
+        card.addView(header);
 
-        // TextView
-        final TextView textFeature = new TextView(context);
-        textFeature.setText(featName + ":");
-        textFeature.setTextColor(Colors.TEXT_COLOR_2);
-        textFeature.setTypeface(typeface);
-        textFeature.setPadding(10, 5, 0, 5);
+        LinearLayout list = new LinearLayout(ui.context);
+        list.setOrientation(LinearLayout.VERTICAL);
+        list.setVisibility(View.GONE);
+        list.setPadding(0, 0, 0, ui.dp(6));
+        card.addView(list, new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
 
-        final Spinner spinner = new Spinner(context, Spinner.MODE_DROPDOWN);
-        spinner.setLayoutParams(mLayoutParam);
-        spinner.getBackground().setColorFilter(1, PorterDuff.Mode.SRC_ATOP);
-        ArrayAdapter<String> aa = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, lists) {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                TextView textView = (TextView) super.getView(position, convertView, parent);
-                textView.setTypeface(typeface);
-                return textView;
-            }
+        View divider = new View(ui.context);
+        divider.setBackgroundColor(Theme.DIVIDER);
+        list.addView(divider, new LinearLayout.LayoutParams(MATCH_PARENT, Math.max(1, ui.dp(0.7f))));
 
-            @Override
-            public View getDropDownView(int position, View convertView, ViewGroup parent) {
-                TextView textView = (TextView) super.getDropDownView(position, convertView, parent);
-                textView.setTypeface(typeface);
-                return textView;
-            }
-        };
-        spinner.setAdapter(aa);
-        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(aa);
-        spinner.setSelection(Preferences.loadPrefInt(featName, featNum));
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                Preferences.changeFeatureInt(spinner.getSelectedItem().toString(), featNum, position);
-                ((TextView) parentView.getChildAt(0)).setTextColor(Colors.TEXT_COLOR_2);
-                ((TextView) parentView.getChildAt(0)).setTypeface(typeface);
-            }
+        TextView[] labels = new TextView[options.length];
+        IconView[] checks = new IconView[options.length];
+        for (int i = 0; i < options.length; i++) {
+            final int index = i;
+            LinearLayout option = new LinearLayout(ui.context);
+            option.setOrientation(LinearLayout.HORIZONTAL);
+            option.setGravity(Gravity.CENTER_VERTICAL);
+            option.setMinimumHeight(ui.dp(40));
+            option.setClickable(true);
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
+            labels[i] = ui.text(Ui.html(options[i]), Theme.TEXT_BODY, Theme.TEXT, ui.regular);
+            option.addView(labels[i], ui.weight());
+            checks[i] = ui.icon("check", 16, Theme.ACCENT);
+            option.addView(checks[i]);
+
+            option.setOnClickListener(v -> {
+                selected[0] = index;
+                paint(labels, checks, index);
+                value.setText(Ui.html(options[index]));
+                list.setVisibility(View.GONE);
+                chevron.setRotation(0);
+                Preferences.changeFeatureInt(item.name, item.id, index);
+            });
+            list.addView(option, new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
+        }
+        paint(labels, checks, selected[0]);
+
+        header.setOnClickListener(v -> {
+            boolean open = list.getVisibility() != View.VISIBLE;
+            list.setVisibility(open ? View.VISIBLE : View.GONE);
+            chevron.animate().rotation(open ? 180 : 0).setDuration(150).start();
         });
+        return card;
+    }
 
-        mLayoutContainer.addView(textFeature);
-        mLayoutContainer.addView(spinner);
+    private static void paint(TextView[] labels, IconView[] checks, int selected) {
+        for (int i = 0; i < labels.length; i++) {
+            boolean on = i == selected;
+            labels[i].setTextColor(on ? Theme.ACCENT : Theme.TEXT);
+            checks[i].setVisibility(on ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
 
-        mContent.addView(mLayoutContainer);
+    private static int clamp(int index, int count) {
+        return Math.max(0, Math.min(count - 1, index));
     }
 }

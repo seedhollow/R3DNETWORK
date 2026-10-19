@@ -14,6 +14,7 @@ import org.lsposed.lsparanoid.Obfuscate;
 public class Launcher extends Service {
 
     Menu menu;
+    private boolean menuStarted;
 
     //When this Class is called the code in this function will be executed
     @Override
@@ -23,7 +24,8 @@ public class Launcher extends Service {
     }
 
     private void startMenu() {
-        if (menu != null) {
+        if (menu != null && !menuStarted) {
+            menuStarted = true;
             menu.SetWindowManagerWindowService();
             menu.ShowMenu();
 
@@ -83,7 +85,6 @@ public class Launcher extends Service {
         menu.onDestroy();
     }
 
-    //Same as above so it wont crash in the background and therefore use alot of Battery life
     @Override
     public void onTaskRemoved(Intent intent) {
         super.onTaskRemoved(intent);
@@ -95,7 +96,6 @@ public class Launcher extends Service {
         stopSelf();
     }
 
-    //Override our Start Command so the Service doesnt try to recreate itself when the App is closed
     public int onStartCommand(Intent intent, int i, int i2) {
         if (intent != null) {
             if (intent.getBooleanExtra(Main.OVERLAY_PERMISSION_KEY, true)) {

@@ -12,9 +12,10 @@
       "filters": [],
       "attributes": [],
       "versionCode": 1,
-      "versionName": "3.2",
+      "versionName": "2.0.0",
       "outputFile": "app-release.apk"
     }
   ],
-  "elementType": "File"
+  "elementType": "File",
+  "minSdkVersionForDexing": 21
 }

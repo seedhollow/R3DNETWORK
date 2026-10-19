@@ -27,7 +27,7 @@ public:
     // Called when a feature value changes
     static void OnFeatureChanged(JNIEnv *env, jclass clazz, jobject obj,
                                  jint featNum, jstring featName,
-                                 jint value, jboolean boolean, jstring str);
+                                 jint value, jfloat floatValue, jboolean boolean, jstring str);
 
     // Called when rendering happens
     static void OnDraw(JNIEnv *env, jclass clazz, jobject draw_view, jobject canvas);

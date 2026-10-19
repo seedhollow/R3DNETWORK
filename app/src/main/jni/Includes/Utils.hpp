@@ -23,6 +23,5 @@ uintptr_t string2Offset(const char *c);
 
 // JNI functions
 jboolean isGameLibLoaded(JNIEnv *env, jobject thiz);
-jbyteArray LoadFontData(JNIEnv *env, jclass thiz, jobject ctx);
 
 #endif // UTILS_HPP

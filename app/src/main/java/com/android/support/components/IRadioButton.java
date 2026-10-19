@@ -1,75 +1,72 @@
 package com.android.support.components;
 
-import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.os.Build;
-import android.text.Html;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
+import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.android.support.Preferences;
+import com.android.support.entity.FeatureEntity;
 
 import org.lsposed.lsparanoid.Obfuscate;
-
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 @Obfuscate
 public class IRadioButton {
 
-    private final Context context;
-    private final Typeface typeface;
+    private final Ui ui;
 
-    public IRadioButton(Context context, Typeface typeface) {
-        this.context = context;
-        this.typeface = typeface;
+    public IRadioButton(Ui ui) {
+        this.ui = ui;
     }
 
-    public void add(LinearLayout mContent, final int featNum, String featName, final String list) {
-        //Credit: LoraZalora
-        final List<String> lists = new LinkedList<>(Arrays.asList(list.split(",")));
+    public View build(FeatureEntity item) {
+        if (item.options == null || item.options.length == 0) return null;
+        String[] options = item.options;
+        int selected = Math.max(0, Math.min(options.length - 1, Preferences.loadPrefInt(item.name, item.id)));
 
-        final TextView textView = new TextView(context);
-        textView.setText(featName + ":");
-        textView.setTextColor(Colors.TEXT_COLOR_2);
-        textView.setTypeface(typeface);
+        LinearLayout card = ui.card(false, false);
+        card.setPadding(card.getPaddingLeft(), 0, card.getPaddingRight(), ui.dp(6));
 
-        final RadioGroup radioGroup = new RadioGroup(context);
-        radioGroup.setPadding(10, 5, 10, 5);
-        radioGroup.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout header = ui.row();
+        header.setMinimumHeight(ui.dp(40));
+        header.addView(ui.label(item.name, item.description), ui.weight());
+        card.addView(header);
 
-        radioGroup.addView(textView);
+        MarkView[] marks = new MarkView[options.length];
+        TextView[] labels = new TextView[options.length];
+        for (int i = 0; i < options.length; i++) {
+            final int index = i;
+            LinearLayout option = new LinearLayout(ui.context);
+            option.setOrientation(LinearLayout.HORIZONTAL);
+            option.setGravity(Gravity.CENTER_VERTICAL);
+            option.setMinimumHeight(ui.dp(36));
+            option.setClickable(true);
 
-        for (int i = 0; i < lists.size(); i++) {
-            final RadioButton radioButton = new RadioButton(context);
-            final String finalfeatName = featName, radioName = lists.get(i);
-            View.OnClickListener first_radio_listener = new View.OnClickListener() {
-                public void onClick(View v) {
-                    textView.setText(Html.fromHtml(finalfeatName + ": <font color='" + Colors.NumberTxtColor + "'>" + radioName));
-                    Preferences.changeFeatureInt(finalfeatName, featNum, radioGroup.indexOfChild(radioButton));
-                }
-            };
-            System.out.println(lists.get(i));
-            radioButton.setText(lists.get(i));
-            radioButton.setTextColor(Color.LTGRAY);
-            radioButton.setTypeface(typeface);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                radioButton.setButtonTintList(ColorStateList.valueOf(Colors.RadioColor));
-            radioButton.setOnClickListener(first_radio_listener);
-            radioGroup.addView(radioButton);
+            marks[i] = new MarkView(ui.context, true);
+            LinearLayout.LayoutParams markParams = new LinearLayout.LayoutParams(ui.dp(18), ui.dp(18));
+            markParams.rightMargin = ui.dp(12);
+            option.addView(marks[i], markParams);
+
+            labels[i] = ui.text(Ui.html(options[i]), Theme.TEXT_BODY, Theme.TEXT, ui.regular);
+            option.addView(labels[i], ui.weight());
+
+            option.setOnClickListener(v -> {
+                paint(marks, labels, index);
+                Preferences.changeFeatureInt(item.name, item.id, index);
+            });
+            card.addView(option, new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
         }
+        paint(marks, labels, selected);
+        return card;
+    }
 
-        int index = Preferences.loadPrefInt(featName, featNum);
-        if (index > 0) { //Preventing it to get an index less than 1. below 1 = null = crash
-            textView.setText(Html.fromHtml(featName + ": <font color='" + Colors.NumberTxtColor + "'>" + lists.get(index - 1)));
-            ((RadioButton) radioGroup.getChildAt(index)).setChecked(true);
+    private static void paint(MarkView[] marks, TextView[] labels, int selected) {
+        for (int i = 0; i < marks.length; i++) {
+            marks[i].setChecked(i == selected);
+            labels[i].setTextColor(i == selected ? Theme.TEXT : Theme.TEXT_DIM);
         }
-        mContent.addView(radioGroup);
     }
 }

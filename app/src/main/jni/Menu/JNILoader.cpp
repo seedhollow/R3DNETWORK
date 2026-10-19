@@ -3,9 +3,11 @@
 //
 
 #include <jni.h>
+#include <iterator>
 #include "Includes/obfuscate.h"
 #include "Includes/Logger.h"
 #include "Includes/Utils.hpp"
+#include "Includes/Fonts/Pixellari.h"
 #include "FeatureModule.hpp"
 #include "JNILoader.hpp"
 
@@ -33,7 +35,7 @@ int JNILoader::RegisterPreferences(JNIEnv *env) {
 
     static const JNINativeMethod methods[] = {
             {OBFUSCATE("Changes"),
-             OBFUSCATE("(Landroid/content/Context;ILjava/lang/String;IZLjava/lang/String;)V"),
+             OBFUSCATE("(Landroid/content/Context;ILjava/lang/String;IFZLjava/lang/String;)V"),
              reinterpret_cast<void *>(FeatureModule::OnFeatureChanged)},
     };
 
@@ -49,6 +51,14 @@ int JNILoader::RegisterPreferences(JNIEnv *env) {
 // ----------------------------
 // Base Menu
 // ----------------------------
+
+// Font for the menu text, the menu only applies it when Theme.USE_CUSTOM_FONT is true, otherwise the system font is used
+jbyteArray JNILoader::LoadFontData(JNIEnv *env, jobject thiz, jobject ctx) {
+    jbyteArray fontData = env->NewByteArray(std::size(pixellari));
+    env->SetByteArrayRegion(fontData, 0, std::size(pixellari), (jbyte *) pixellari);
+    return fontData;
+}
+
 int JNILoader::RegisterBaseMenu(JNIEnv *env) {
     jclass clazz = env->FindClass(OBFUSCATE("com/android/support/BaseMenu"));
     if (!clazz) {

@@ -6,7 +6,6 @@
 #include <cstdlib>
 #include "../Includes/obfuscate.h"
 #include "Logger.h"
-#include "Fonts/Pixellari.h"
 #include "Utils.hpp"
 
 
@@ -86,14 +85,4 @@ uintptr_t string2Offset(const char *c) {
 
     // Now choose the correct function ...
     return strtoul(c, nullptr, base);
-}
-
-jbyteArray LoadFontData(JNIEnv *env, jclass thiz, jobject ctx) {
-    // Create a byte array in Java to hold the font data
-    jbyteArray fontData = env->NewByteArray(std::size(font));
-
-    // Set the content of the byte array with the embedded font data
-    env->SetByteArrayRegion(fontData, 0, std::size(font), (jbyte*)font);
-
-    return fontData;  // Return the font data as a byte array
 }

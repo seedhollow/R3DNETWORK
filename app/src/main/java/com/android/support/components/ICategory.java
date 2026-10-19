@@ -1,41 +1,36 @@
 package com.android.support.components;
 
-import android.content.Context;
-import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
-import android.text.Html;
-import android.view.Gravity;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.support.Menu;
+import com.android.support.entity.FeatureEntity;
 
 import org.lsposed.lsparanoid.Obfuscate;
 
 @Obfuscate
 public class ICategory {
 
-    private final Context context;
-    private final Typeface typeface;
+    private final Ui ui;
 
-    public ICategory(Context context, Typeface typeface) {
-        this.context = context;
-        this.typeface = typeface;
+    public ICategory(Ui ui) {
+        this.ui = ui;
     }
 
-    public void add(LinearLayout mContent, String text) {
+    public View build(FeatureEntity item) {
+        return build(item.name);
+    }
 
-        GradientDrawable categoryDrawable = new GradientDrawable();
-        categoryDrawable.setCornerRadius(Menu.MENU_CORNER_RADIUS); //Set corner
-        categoryDrawable.setColor(Colors.MENU_BG_COLOR);
-
-        TextView textView = new TextView(context);
-        textView.setBackground(categoryDrawable);
-        textView.setText(Html.fromHtml(text));
-        textView.setGravity(Gravity.CENTER);
-        textView.setTextColor(Colors.TEXT_COLOR_2);
-        textView.setTypeface(typeface, Typeface.BOLD);
-        textView.setPadding(0, 5, 0, 5);
-        mContent.addView(textView);
+    public View build(String name) {
+        TextView text = ui.text(Ui.html(name), Theme.TEXT_SMALL, Theme.TEXT_DIM, ui.medium);
+        text.setLetterSpacing(0.04f);
+        text.setPadding(ui.dp(4), ui.dp(10), ui.dp(4), 0);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+        params.bottomMargin = ui.dp(8);
+        text.setLayoutParams(params);
+        return text;
     }
 }

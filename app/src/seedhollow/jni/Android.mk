@@ -1,5 +1,0 @@
-FLAVOR_LOCAL_PATH := $(call my-dir)
-
-LOCAL_C_INCLUDES += $(FLAVOR_LOCAL_PATH)
-
-LOCAL_SRC_FILES += $(FLAVOR_LOCAL_PATH)/Menu/Setup.cpp \

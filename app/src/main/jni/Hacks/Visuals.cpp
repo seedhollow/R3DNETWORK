@@ -5,9 +5,10 @@
 #include "Visuals.hpp"
 
 
+// make sure all the the pointers like enemy is valid before using them, otherwise it will crash the game
 void Visuals::Update(Draw draw, int screenWidth, int screenHeight) {
-    //Example to get camera
-    //UnityResolve::UnityType::Camera *camera = UnityResolve::UnityType::Camera::GetMain();
+    // Example to get camera
+    // UnityResolve::UnityType::Camera *camera = UnityResolve::UnityType::Camera::GetMain();
     // Full documentation of UnityResolve.hpp
     // https://github.com/issuimo/UnityResolve.hpp
     if (Vars::PlayerData.ESPCrosshair) {

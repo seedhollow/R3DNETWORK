@@ -18,6 +18,10 @@ public:
         m_Features.push_back(std::make_shared<T>(feature));
     }
 
+    static void Clear() {
+        m_Features.clear();
+    }
+
     static std::string ToJsonString() {
         json array = json::array();
         for (auto& feat : m_Features) array.push_back(feat->ToJson());

@@ -31,9 +31,12 @@ public class FeatureParser {
         feature.type            = obj.optString("type", "");
         feature.name            = obj.optString("name", "");
         feature.description     = obj.optString("description", "");
+        feature.icon            = obj.optString("icon", "");
         feature.enabled         = obj.optBoolean("enabled", false);
         feature.min             = obj.has("min") ? obj.getInt("min") : null;
         feature.max             = obj.has("max") ? obj.getInt("max") : null;
+        feature.maxFloat        = obj.has("max") ? (float) obj.getDouble("max") : null;
+        feature.decimals        = obj.has("decimals") ? obj.getInt("decimals") : null;
 
         if (obj.has("options")) {
             JSONArray opts = obj.getJSONArray("options");
@@ -44,7 +47,7 @@ public class FeatureParser {
         }
 
         // Recursive children parsing
-        // this used for nested features like ICollapse
+        // this used for nested features like ITab and ICollapse
         if (obj.has("children")) {
             JSONArray childrenArray = obj.getJSONArray("children");
             List<FeatureEntity> childList = new ArrayList<>();

@@ -18,6 +18,9 @@ private:
     static int RegisterPreferences(JNIEnv *env);
     static int RegisterBaseMenu(JNIEnv *env);
     static int RegisterDrawView(JNIEnv *env);
+
+    // Natives
+    static jbyteArray LoadFontData(JNIEnv *env, jobject thiz, jobject ctx);
 };
 
 #endif //IL2CPPANDROID_JNILOADER_HPP

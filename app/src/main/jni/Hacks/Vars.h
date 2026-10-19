@@ -12,6 +12,7 @@ namespace Vars {
         bool ESPCrosshair   = false;
         int CrosshairSize   = 1;
         int CrosshairColor  = 0;
+        float SpeedMultiplier = 1.0f;
     };
 
     inline PlayerData_t PlayerData;

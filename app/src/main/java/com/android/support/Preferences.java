@@ -24,27 +24,41 @@ public class Preferences {
     private static final long DEFAULT_LONG_VALUE = 0L; //-1L
     private static final boolean DEFAULT_BOOLEAN_VALUE = false;
 
-    public static native void Changes(Context con, int fNum, String fName, int i, boolean bool, String str);
+    public static native void Changes(Context con, int fNum, String fName, int i, float f, boolean bool, String str);
 
     public static void changeFeatureInt(String featureName, int featureNum, int value) {
         Preferences.with(context).writeInt(featureNum, value);
-        Changes(context, featureNum, featureName, value, false, null);
+        Changes(context, featureNum, featureName, value, 0f, false, null);
     }
 
     public static void changeFeatureString(String featureName, int featureNum, String str) {
         Preferences.with(context).writeString(featureNum, str);
-        Changes(context, featureNum, featureName, 0, false, str);
+        Changes(context, featureNum, featureName, 0, 0f, false, str);
     }
 
     public static void changeFeatureBool(String featureName, int featureNum, boolean bool) {
         Preferences.with(context).writeBoolean(featureNum, bool);
-        Changes(context, featureNum, featureName, 0, bool, null);
+        Changes(context, featureNum, featureName, 0, 0f, bool, null);
+    }
+
+    public static void changeFeatureFloat(String featureName, int featureNum, float value) {
+        Preferences.with(context).writeFloat(featureNum, value);
+        Changes(context, featureNum, featureName, 0, value, false, null);
+    }
+
+    public static float loadPrefFloat(String featureName, int featureNum) {
+        if (loadPref) {
+            float f = Preferences.with(context).readFloat(featureNum);
+            Changes(context, featureNum, featureName, 0, f, false, null);
+            return f;
+        }
+        return 0f;
     }
 
     public static int loadPrefInt(String featureName, int featureNum) {
         if (loadPref) {
             int i = Preferences.with(context).readInt(featureNum);
-            Changes(context, featureNum, featureName, i, false, null);
+            Changes(context, featureNum, featureName, i, 0f, false, null);
             return i;
         }
         return 0;
@@ -62,14 +76,14 @@ public class Preferences {
             bDef = bool;
         }
 
-        Changes(context, featureNum, featureName, 0, bDef, null);
+        Changes(context, featureNum, featureName, 0, 0f, bDef, null);
         return bDef;
     }
 
     public static String loadPrefString(String featureName, int featureNum) {
         if (loadPref || featureNum <= 0) {
             String str = Preferences.with(context).readString(featureNum);
-            Changes(context, featureNum, featureName, 0, false, str);
+            Changes(context, featureNum, featureName, 0, 0f, false, str);
             return str;
         }
         return "";
@@ -289,6 +303,18 @@ public class Preferences {
      */
     public void writeFloat(String where, float what) {
         sharedPreferences.edit().putFloat(where, what).apply();
+    }
+
+    public float readFloat(int what) {
+        try {
+            return sharedPreferences.getFloat(String.valueOf(what), DEFAULT_FLOAT_VALUE);
+        } catch (java.lang.ClassCastException ex) {
+            return 0f;
+        }
+    }
+
+    public void writeFloat(int where, float what) {
+        sharedPreferences.edit().putFloat(String.valueOf(where), what).apply();
     }
 
     // long related methods

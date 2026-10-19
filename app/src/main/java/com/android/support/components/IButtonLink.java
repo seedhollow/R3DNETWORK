@@ -1,46 +1,41 @@
 package com.android.support.components;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.net.Uri;
-import android.text.Html;
-import android.widget.Button;
+import android.util.Log;
+import android.view.View;
 import android.widget.LinearLayout;
+
+import com.android.support.entity.FeatureEntity;
 
 import org.lsposed.lsparanoid.Obfuscate;
 
 @Obfuscate
 public class IButtonLink {
 
-    private final Context context;
-    private final Typeface typeface;
-    public IButtonLink(Context context, Typeface typeface) {
-        this.context = context;
-        this.typeface = typeface;
+    private final Ui ui;
+
+    public IButtonLink(Ui ui) {
+        this.ui = ui;
     }
 
-    public void add(LinearLayout linLayout, final String featName, final String url) {
+    public View build(FeatureEntity item) {
+        LinearLayout card = ui.card(true, true);
+        card.addView(ui.label(item.name, null), ui.weight());
+        IconView icon = ui.icon("external", 16, Theme.TEXT_DIM);
+        ((LinearLayout.LayoutParams) icon.getLayoutParams()).leftMargin = ui.dp(12);
+        card.addView(icon);
 
-        LinearLayout.LayoutParams mLayoutParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        mLayoutParam.setMargins(0, 2, 0, 2);
-
-        final Button button = new Button(context);
-        button.setLayoutParams(mLayoutParam);
-        button.setAllCaps(false); //Disable caps to support html
-        button.setTextColor(Colors.TEXT_COLOR_2);
-        button.setTypeface(typeface);
-        button.setText(Html.fromHtml(featName));
-        button.setBackgroundColor(Colors.BTN_COLOR);
-        button.setPaintFlags(button.getPaintFlags() | android.graphics.Paint.UNDERLINE_TEXT_FLAG);
-        button.setOnClickListener(v -> {
-            // Launch Url with chrome custom tab
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setData(Uri.parse(url));
-            context.startActivity(intent);
+        String url = item.description;
+        card.setOnClickListener(v -> {
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                ui.context.startActivity(intent);
+            } catch (Exception e) {
+                Log.e("R3DNetwork", "Cannot open link: " + url, e);
+            }
         });
-
-        linLayout.addView(button);
+        return card;
     }
 }
