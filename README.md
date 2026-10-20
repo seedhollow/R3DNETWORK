@@ -1,6 +1,6 @@
 ![Mod Preview](img/preview.jpg)
 
-# IL2CPP Android Template
+# R3DNETWORKID Android Template
 
 This project is based on [LGL Mod Menu](https://github.com/LGLTeam/Android-Mod-Menu/). Since the original project is no longer actively maintained, We have made several modifications, including:
 
@@ -10,6 +10,23 @@ This project is based on [LGL Mod Menu](https://github.com/LGLTeam/Android-Mod-M
   - Integrated [BlackObfuscator](https://github.com/CodingGay/BlackObfuscator-ASPlugin) for enhanced code obfuscation.
   - Added [LSParanoid](https://github.com/LSPosed/LSParanoid) to provide string encryption for securing sensitive text data.
 
+# Prerequisites
+Before we can jump head first into working a template, we need to go over a few things.
+
+* **AN EXPERIENCED MODDER** You should be able to mod any games in general, like modifying .so files, dll files, smali files, etc.
+* Android Studio, i don't think this project could compile on android software like AIDE 
+* Basic knowledge of smali dalvik opcodes to modify smali
+* Basic knowledge ARM and ARM64 assembly, to be able to patch hex (No need x86)
+* Basic knowledge of C++ and java (JNI is optional)
+* Be able to write hook function in C++ (Not really needed, but recommended if you want to do advanced modding in the future)
+* Basic awareness of how Android layout works in XML and Java. This project only use Java for layout but you will learn it easly
+* Time and patience: Don't start working on this if you have deadlines or important work. Take your time to read, learn and get used to work with this project.
+* DIY (Do it yourself): Yes, you must be able to do things yourself, not depending being spoonfeed. We are not the teachers.
+* An inquisitive mind
+
+We are not babysitters for naive, lazy, pathetic children... Grow up. Read and learning by yourself is mandatory!
+
+
 > [!NOTE]\
 > Starting from version 1.3, `Il2cppResolver` has been replaced with `UnityResolve` to offer more extensive API support and improved functionality.
 > 
@@ -17,9 +34,14 @@ This project is based on [LGL Mod Menu](https://github.com/LGLTeam/Android-Mod-M
 
 ## Menu Layout
 
-Starting from version 2, the menu has a single layout built, a floating bubble that opens a panel with a tab sidebar on the left and feature cards on the right. The LGL layout and the build flavors were removed from this version, it's hard to maintenance lol
+> [!NOTE]\
+> Starting from version 2, the menu has a single layout built, a floating bubble that opens a panel with a tab sidebar on the left and feature cards on the right. The LGL layout and the build flavors were removed from this version, it's hard to maintenance lol
+>
+>if you prefer using the old one, consider to choose v1 branch
+> 
 
-Features are declared in `Menu/FeatureModule.cpp`. Each `ITab` becomes a sidebar entry, and an `ICollapse` opens its children as a sub-page:
+
+Features are declared in `Menu/FeatureModule.cpp`. Each `ITab` becomes a sidebar entry, and an `ICollapse` opens its children as a sub-page, "Why is it different from the LGL implementation?" Sometimes I forget how to implement a widget when the parameters differ.
 
 ```cpp
 Widget::Add(ITab(OBFUSCATE("Visuals"), OBFUSCATE("eye"), {
@@ -67,7 +89,7 @@ invoke-static {p0}, Lcom/android/support/Main;->Start(Landroid/content/Context;)
 
 ## Customizing Fonts  
 
-You can integrate custom fonts into your project using a `C array`. To generate the required font data, you can use a hexadecimal editor such as [ImHex](https://github.com/WerWolv/ImHex).  
+You can integrate custom fonts into your project using a `C array`. To generate the required font data, you can use a hexadecimal editor such as [ImHex](https://github.com/WerWolv/ImHex).
 
 #### 1. Exporting the Font  
 
@@ -81,7 +103,7 @@ To export a font, follow these steps:
 #### 2. Importing the Font into Your Project  
 
 1. Copy the exported `.h` font file to the `Includes/Fonts/` directory.  
-2. Open `Menu/JNILoader.cpp` and include your font header in place of `Includes/Fonts/Pixellari.h`.  
+2. Open `Menu/JNILoader.cpp` and include your font header in `Includes/Fonts/`.  
 3. Locate the `JNILoader::LoadFontData` method and modify it to use the newly exported font.  
 
 #### Example: Modifying `LoadFontData`  
@@ -108,11 +130,13 @@ The menu uses the system sans-serif font by default. Set `Theme.USE_CUSTOM_FONT 
 - [Arknights DLC](https://github.com/seedhollow/arknights-dlc) Simple Game Helper for better experience.
 
 ## Credits
-
+- LGL Team.
 - [UnityResolve](https://github.com/issuimo/UnityResolve.hpp)
 - [Dobby](https://github.com/jmpews/Dobby/)
 - [Remap Hide](https://github.com/reveny/Android-Library-Remap-Hide)
 
+## Suggestions
+If you have any questions or requests related to this project, feel free to open an issue.
 
 ## Disclaimer
 This project is for Educational Use only. We do not condone this project being used to gain an advantage against other people. This project was made for fun.
