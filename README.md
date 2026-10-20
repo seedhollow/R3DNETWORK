@@ -1,4 +1,4 @@
-![Mod Preview](img/preview.png)
+![Mod Preview](img/preview.jpg)
 
 # IL2CPP Android Template
 
